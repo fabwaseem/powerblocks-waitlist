@@ -1,24 +1,32 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import {
   DiscordIcon,
   GoogleIcon,
   TelegramIcon,
   XIcon,
 } from "@/components/common/icons";
-import { Button } from "../ui/button";
-import { Check, Copy, CopyIcon, LinkIcon, Pencil } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 import { useReferralStore } from "@/store/referrals";
+import { useTaskStore } from "@/store/tasks";
+import { Check, LinkIcon, Pencil } from "lucide-react";
 import Image from "next/image";
-import { copyToClipboard } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import CopyButton from "../common/CopyButton";
+import { Button } from "../ui/button";
+import TaskCard from "./TaskCard";
 
 const App = () => {
   const { user, isAuthenticated } = useAuthStore();
   const { referralInfo, loading, fetchReferralInfo, clearReferralInfo } =
     useReferralStore();
+  const {
+    tasks,
+    loading: tasksLoading,
+    fetchTasks,
+    completeTask,
+    completingTask,
+  } = useTaskStore();
   const [newUsername, setNewUsername] = useState(user?.username);
 
   useEffect(() => {
@@ -30,6 +38,7 @@ const App = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       fetchReferralInfo();
+      fetchTasks();
     } else {
       clearReferralInfo();
     }
@@ -48,18 +57,18 @@ const App = () => {
     switch (status) {
       case "COLLECTED":
         return (
-          <span className="text-[#4ade80] text-sm font-medium">+500 PWR</span>
+          <span className="text-[#4ade80] text-sm font-medium">+500 XP</span>
         );
       case "CLAIMABLE":
         return (
-          <button className="px-3 py-1 bg-[#4c1d95] text-white text-xs rounded-full border border-[#6d28d9] hover:bg-[#5b21b6] transition-colors">
+          <button className="px-3 py-1 bg-[#4c1d95] text-white text-xs rounded-full border border-[#6d28d9] hover:bg-[#5b21b6] transition-colors w-max">
             Claim
           </button>
         );
       case "PENDING":
         return (
-          <span className="px-3 py-1 bg-[#2a2a4e] text-[#A5A9C1] text-xs rounded-full">
-            Pending
+          <span className="px-3 py-1 bg-[#2a2a4e] text-[#A5A9C1] text-xs rounded-full w-max">
+            Pending...
           </span>
         );
       default:
@@ -142,21 +151,27 @@ const App = () => {
                 <div className="text-center">
                   <div className=" text-sm mb-1">Today</div>
                   <div className="bg-white/10 border border-white/10 rounded-lg py-3">
-                    <div className="text-2xl font-bold text-white">100</div>
+                    <div className="text-2xl font-bold text-white">
+                      {user?.xpPoints?.today}
+                    </div>
                     <div className="text-[#A5A9C1] text-xs">XP</div>
                   </div>
                 </div>
                 <div className="text-center">
                   <div className=" text-sm mb-1">This Week</div>
                   <div className="bg-white/10 border border-white/10 rounded-lg py-3">
-                    <div className="text-2xl font-bold text-white">-</div>
+                    <div className="text-2xl font-bold text-white">
+                      {user?.xpPoints?.thisWeek}
+                    </div>
                     <div className="text-[#A5A9C1] text-xs">XP</div>
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-sm mb-1">This Month</div>
                   <div className="bg-white/10 border border-white/10 rounded-lg py-3">
-                    <div className="text-2xl font-bold text-white">-</div>
+                    <div className="text-2xl font-bold text-white">
+                      {user?.xpPoints?.thisMonth}
+                    </div>
                     <div className="text-[#A5A9C1] text-xs">XP</div>
                   </div>
                 </div>
@@ -165,7 +180,9 @@ const App = () => {
               {/* Lifetime XP */}
               <div className="flex items-center gap-2">
                 <span className="text-white text-sm">Lifetime XP points</span>
-                <span className="text-[#EE4FFB] font-bold">0</span>
+                <span className="text-[#EE4FFB] font-bold">
+                  {user?.xpPoints?.total}
+                </span>
               </div>
             </div>
 
@@ -175,35 +192,19 @@ const App = () => {
               </h2>
 
               <div className="no-scrollbar max-h-[250px] overflow-y-auto">
-                {/* Task 1 - Completed */}
-                <div className="flex items-center justify-between p-4  border-b border-white/10 bg-[#EE4FFB]/10">
-                  <span className="text-white font-medium text-base">
-                    Task 1 - Verify Email
-                  </span>
-                  <span className="text-[#EE4FFB] font-bold text-base">
-                    Completed +100 XP
-                  </span>
-                </div>
-
-                {/* Task 2 - Available */}
-                <div className="flex items-center justify-between p-4  border-b border-white/10 ">
-                  <span className="text-white font-medium text-base">
-                    Task 2 - Phone Number
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[#96A3F6] font-bold text-base">
-                      +200 XP
-                    </span>
-                    <Button variant={"purple"} disabled>
-                      Unlocks in 12:34:25
-                    </Button>
+                {tasksLoading ? (
+                  <div className="text-center text-[#A5A9C1] py-8">
+                    Loading tasks...
                   </div>
-                </div>
-                <div className="flex items-center justify-between p-4  border-b border-white/10 ">
-                  <span className="text-white font-medium text-base">
-                    Task 3 - Social
-                  </span>
-                </div>
+                ) : tasks && tasks.length > 0 ? (
+                  tasks
+                    .sort((a, b) => a.orderIndex - b.orderIndex)
+                    .map((task) => <TaskCard key={task.id} task={task} />)
+                ) : (
+                  <div className="text-center text-[#A5A9C1] py-8">
+                    No tasks available
+                  </div>
+                )}
               </div>
             </div>
           </div>

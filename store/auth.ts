@@ -15,6 +15,12 @@ interface User {
     solana?: { address: string; totalAmount: number; availableAmount: number };
     tron?: { address: string; totalAmount: number; availableAmount: number };
   };
+  xpPoints?: {
+    today: number;
+    thisWeek: number;
+    thisMonth: number;
+    total: number;
+  };
 }
 
 interface AuthState {

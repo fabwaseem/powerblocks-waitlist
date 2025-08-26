@@ -173,7 +173,7 @@ const Auth = () => {
         <img
           src="/images/waitlist/yoni.png"
           alt="yuni"
-          className="absolute bottom-0 left-[40%] w-4xl object-cover"
+          className="absolute bottom-0 left-[40%] w-4xl object-cover pointer-events-none"
         />
       </div>
 

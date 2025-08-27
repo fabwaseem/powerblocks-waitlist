@@ -68,4 +68,14 @@ export const referralsApi = {
     const response = await api.get<UserReferralInfo>("/referrals");
     return response.data;
   },
+
+  claimReferralReward: async ({
+    referralId,
+  }: {
+    referralId: string;
+  }): Promise<void> => {
+    await api.post(`/referrals/claim`, {
+      referralId,
+    });
+  },
 };

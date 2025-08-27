@@ -45,6 +45,10 @@ const Auth = () => {
   });
 
   const onSignupSubmit = async (data: { email: string }) => {
+    if (!data.email) {
+      toast.error("Please enter your email");
+      return;
+    }
     // const recaptchaToken = recaptchaRef.current?.getValue()
     // if (!recaptchaToken) {
     //   toast.error('Please complete the reCAPTCHA')

@@ -78,10 +78,6 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         isAuthenticated: false,
         error: null,
       });
-
-      // Clear referral info when user logs out
-      // We need to import and use the referral store here
-      // This will be handled by the component that uses both stores
     } catch (err) {
       console.error("Logout error:", err);
       set({

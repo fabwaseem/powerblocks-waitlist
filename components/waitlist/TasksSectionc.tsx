@@ -278,7 +278,7 @@ const TasksSection = () => {
             </div>
 
             {/* Text moved to right */}
-            <div className="flex-1">
+            <div className="flex-1 mt-auto">
               <p className="text-gray-400 text-base">
                 *Tasks unlock every 24h.
               </p>

@@ -15,6 +15,9 @@ import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
+import Navbar from "../home/navbar";
+import Link from "next/link";
+import Image from "next/image";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -98,6 +101,20 @@ const Auth = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
+      <Link
+        href="/"
+        className="flex items-center justify-center gap-2 absolute lg:top-16 lg:left-16 top-5 left-5 z-50"
+      >
+        <Image
+          src="/images/logo.svg"
+          alt="Powerblocks"
+          width={33}
+          height={42}
+          className="size-10"
+        />
+        <h1 className="text-white text-2xl font-aeon ik-bold">Powerblocks</h1>
+      </Link>
+
       {/* DESKTOP */}
 
       <div className="hidden lg:block">

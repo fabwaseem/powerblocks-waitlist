@@ -23,7 +23,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 flex h-32 w-full shrink-0 items-center justify-between  px-4 md:px-6 max-w-[1640px] mx-auto">
+      <header className="relative z-50 flex h-28 w-full shrink-0 items-center justify-between  max-w-[1640px] mx-auto">
         {/* Desktop Left Section */}
         <div className="flex items-center gap-6">
           {/* Logo */}

@@ -9,15 +9,14 @@ import {
 import { useAuthStore } from "@/store/auth";
 import { useReferralStore } from "@/store/referrals";
 import { useTaskStore } from "@/store/tasks";
-import { Check, LinkIcon, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import CopyButton from "../common/CopyButton";
 import { Button } from "../ui/button";
-import TaskCard from "./TaskCard";
-import TasksSection from "./TasksSection";
 import ReferralsCard from "./ReferralsCard";
+import TasksSection from "./TasksSection";
+import Navbar from "../home/navbar";
 
 const App = () => {
   const { user, isAuthenticated } = useAuthStore();
@@ -55,7 +54,9 @@ const App = () => {
   }, [isAuthenticated, user, fetchReferralInfo, clearReferralInfo]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-6 relative pt-32">
+    <div className="min-h-screen bg-[#0a0a0a] text-white p-4 lg:p-6 relative">
+      <Navbar />
+
       {/* glowing bg elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-50 left-55 w-266 h-30 rounded-full bg-[#EE4FFB]/20 blur-[100px]"></div>
@@ -66,8 +67,8 @@ const App = () => {
       {/* content */}
       <div className="max-w-[1640px] mx-auto relative z-10">
         {/* Welcome Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white">
+        <div className="flex justify-between lg:items-center mb-8 flex-col lg:flex-row gap-4">
+          <h1 className="text-2xl lg:text-3xl font-bold text-white">
             Hi Dawg, welcome back!
           </h1>
 

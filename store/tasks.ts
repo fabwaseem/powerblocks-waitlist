@@ -97,7 +97,7 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
       const { tasks } = get();
       const updatedTasks = tasks.map((task) =>
         task.id === taskId
-          ? { ...task, status: "COMPLETED" as const, canComplete: false }
+          ? { ...task, isCompleted: true, isNextTask: false }
           : task
       );
       set({ tasks: updatedTasks });

@@ -1,10 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useTaskStore } from "@/store/tasks";
 import { formatTime } from "@/lib/utils";
+import { CheckIcon, FlameIcon } from "lucide-react";
+import { LockIcon } from "lucide-react";
+import toast from "react-hot-toast";
+import { Task } from "@/lib/api/tasks";
+import TasksGrid from "./TasksGrid";
 
 const TasksSection = () => {
-  const { tasks, loading: tasksLoading, fetchTasks } = useTaskStore();
+  const {
+    tasks,
+    loading: tasksLoading,
+    fetchTasks,
+    completeTask,
+    completingTask,
+  } = useTaskStore();
   const [timeUntilNextClaim, setTimeUntilNextClaim] = useState(0);
+  const [isTaskUnlocked, setIsTaskUnlocked] = useState(false);
 
   // Fetch tasks on component mount
   useEffect(() => {
@@ -18,9 +30,34 @@ const TasksSection = () => {
   const totalTasks = tasks.length;
   const progressPercentage =
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const nextTask = tasks.find((task) => task.isNextTask);
+
+  // Check if there's an unlocked task available
+  const hasUnlockedTask = tasks.some(
+    (task) => task.isNextTask && !task.isLocked && !task.isCompleted
+  );
+
+  // Update unlocked state
+  useEffect(() => {
+    setIsTaskUnlocked(hasUnlockedTask);
+  }, [hasUnlockedTask]);
+
+  // Calculate circular progress based on time remaining for next task unlock
+  // Assuming 24 hours (86400 seconds) as the full cycle
+  const fullCycleTime = nextTask?.unlockDelay ?? 24 * 60 * 60; // 24 hours in seconds
+  const timeProgress =
+    timeUntilNextClaim > 0
+      ? Math.max(
+          0,
+          Math.min(
+            100,
+            ((fullCycleTime - timeUntilNextClaim) / fullCycleTime) * 100
+          )
+        )
+      : 0;
 
   // Progress variable to control the circular progress (0-100)
-  const circularProgress = 48; // You can change this value or make it dynamic
+  const circularProgress = isTaskUnlocked ? 100 : timeProgress; // Show full progress when unlocked
 
   // Find next task unlock time
   useEffect(() => {
@@ -41,77 +78,9 @@ const TasksSection = () => {
     }
   }, [tasks]);
 
-  // Generate status grid (5x5 = 25 items) based on actual task completion
-  const generateStatusGrid = () => {
-    const gridItems = [];
+  // Handle task completion
 
-    // Create a pattern that matches the image: some completed (green checkmarks), some available (purple flames), some locked (gray locks)
-    for (let i = 0; i < 25; i++) {
-      let icon = "lock";
-      let bgColor = "bg-gray-700/30";
-      let borderColor = "border-gray-600";
 
-      // Based on the image pattern, set different states
-      if (i < completedTasks) {
-        // Completed tasks - green checkmarks
-        icon = "check";
-        bgColor = "bg-green-500/20";
-        borderColor = "border-green-500";
-      } else if (i < completedTasks + 3) {
-        // Next few available tasks - purple flames
-        icon = "flame";
-        bgColor = "bg-purple-500/20";
-        borderColor = "border-purple-500";
-      }
-      // Rest remain locked (gray)
-
-      gridItems.push(
-        <div
-          key={i}
-          className={`w-11 h-11 rounded-lg ${bgColor} border ${borderColor} flex items-center justify-center transition-all duration-200 hover:scale-105`}
-        >
-          {icon === "check" ? (
-            <svg
-              className="w-5 h-5 text-green-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          ) : icon === "flame" ? (
-            <svg
-              className="w-5 h-5 text-purple-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
-                clipRule="evenodd"
-              />
-            </svg>
-          ) : (
-            <svg
-              className="w-5 h-5 text-gray-500"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          )}
-        </div>
-      );
-    }
-    return gridItems;
-  };
 
   if (tasksLoading) {
     return (
@@ -142,18 +111,33 @@ const TasksSection = () => {
               {/* Individual progress segments */}
               <div className="flex gap-1">
                 {Array.from({ length: 10 }, (_, index) => {
-                  const segmentProgress = ((completedTasks || 10) / 21) * 10; // Assuming 21 total tasks like in image
-                  const isCompleted = index < segmentProgress;
+                  const totalProgress =
+                    totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+                  const segmentStart = index * 10;
+                  const segmentEnd = (index + 1) * 10;
+
+                  // Calculate how much of this segment should be filled
+                  let segmentFillPercentage = 0;
+
+                  if (totalProgress >= segmentEnd) {
+                    // Segment is completely filled
+                    segmentFillPercentage = 100;
+                  } else if (totalProgress > segmentStart) {
+                    // Segment is partially filled
+                    segmentFillPercentage =
+                      ((totalProgress - segmentStart) / 10) * 100;
+                  }
 
                   return (
                     <div
                       key={index}
-                      className={`flex-1 h-2 rounded-full transition-all duration-300 ${
-                        isCompleted
-                          ? "bg-gradient-to-r from-green-400 to-green-500"
-                          : "bg-gray-700/50 border border-gray-600"
-                      }`}
-                    />
+                      className="flex-1 h-2 rounded-full bg-gray-700/50 border border-gray-600 overflow-hidden"
+                    >
+                      <div
+                        className="h-full bg-gradient-to-r from-green-400 to-green-500 transition-all duration-300"
+                        style={{ width: `${segmentFillPercentage}%` }}
+                      />
+                    </div>
                   );
                 })}
               </div>
@@ -161,9 +145,11 @@ const TasksSection = () => {
               {/* Progress text moved to bottom */}
               <div className="flex justify-between text-sm">
                 <span className="text-green-400 font-medium">
-                  10/21 Task Complete
+                  {completedTasks}/{totalTasks} Task Complete
                 </span>
-                <span className="text-gray-300 font-medium">48%</span>
+                <span className="text-gray-300 font-medium">
+                  {progressPercentage}%
+                </span>
               </div>
             </div>
           </div>
@@ -179,101 +165,144 @@ const TasksSection = () => {
                   left: "5px",
                 }}
               ></div>
-              <svg className="w-44 h-44" viewBox="0 0 176 176">
-                <path
-                  d={`M 88 18 A 70 70 0 ${circularProgress > 50 ? 1 : 0} 1 ${
-                    88 + 70 * Math.sin((circularProgress / 100) * 2 * Math.PI)
-                  } ${
-                    88 - 70 * Math.cos((circularProgress / 100) * 2 * Math.PI)
-                  }`}
-                  stroke="url(#timerGradient)"
-                  strokeWidth="20"
-                  fill="none"
-                  strokeLinecap="round"
-                  className="transition-all duration-500 ease-in-out"
-                />
-
-                {/* Clock icon at start of progress (top) */}
-                <g transform="translate(88, 18)">
-                  <svg
-                    x="-8.5"
-                    y="-8.5"
-                    width="17"
-                    height="17"
-                    viewBox="0 0 17 17"
+              {!isTaskUnlocked && (
+                <svg className="w-44 h-44" viewBox="0 0 176 176">
+                  <path
+                    d={`M 88 18 A 70 70 0 ${circularProgress > 50 ? 1 : 0} 1 ${
+                      88 +
+                      70 *
+                        Math.sin(
+                          (Math.min(circularProgress, 100) / 100) * 2 * Math.PI
+                        )
+                    } ${
+                      88 -
+                      70 *
+                        Math.cos(
+                          (Math.min(circularProgress, 100) / 100) * 2 * Math.PI
+                        )
+                    }`}
+                    stroke={
+                      isTaskUnlocked
+                        ? "url(#readyGradient)"
+                        : "url(#timerGradient)"
+                    }
+                    strokeWidth="20"
                     fill="none"
-                  >
-                    <path
-                      d="M2.4873 8.35491C2.4873 5.01161 5.19715 2.30176 8.54046 2.30176C11.8837 2.30176 14.5936 5.01161 14.5936 8.35491C14.5936 11.6975 11.8837 14.4081 8.54046 14.4081C6.12554 14.4081 4.04114 12.9939 3.06972 10.9488"
-                      stroke="white"
-                      strokeWidth="1.00886"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M10.4551 10.0846L8.31982 8.80854V6.05225"
-                      stroke="white"
-                      strokeWidth="1.00886"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </g>
+                    strokeLinecap="round"
+                    className="transition-all duration-500 ease-in-out"
+                  />
 
-                {/* Clock icon at end of progress (moves with progress) */}
-                <g
-                  transform={`translate(${
-                    88 + 70 * Math.sin((circularProgress / 100) * 2 * Math.PI)
-                  }, ${
-                    88 - 70 * Math.cos((circularProgress / 100) * 2 * Math.PI)
-                  })`}
-                >
-                  <svg
-                    x="-8.5"
-                    y="-8.5"
-                    width="17"
-                    height="17"
-                    viewBox="0 0 17 17"
-                    fill="none"
-                  >
-                    <path
-                      d="M2.4873 8.35491C2.4873 5.01161 5.19715 2.30176 8.54046 2.30176C11.8837 2.30176 14.5936 5.01161 14.5936 8.35491C14.5936 11.6975 11.8837 14.4081 8.54046 14.4081C6.12554 14.4081 4.04114 12.9939 3.06972 10.9488"
-                      stroke="white"
-                      strokeWidth="1.00886"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M10.4551 10.0846L8.31982 8.80854V6.05225"
-                      stroke="white"
-                      strokeWidth="1.00886"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </g>
+                  {/* Clock icon at start of progress (top) */}
+                  <g transform="translate(88, 18)">
+                    <svg
+                      x="-8.5"
+                      y="-8.5"
+                      width="17"
+                      height="17"
+                      viewBox="0 0 17 17"
+                      fill="none"
+                    >
+                      <path
+                        d="M2.4873 8.35491C2.4873 5.01161 5.19715 2.30176 8.54046 2.30176C11.8837 2.30176 14.5936 5.01161 14.5936 8.35491C14.5936 11.6975 11.8837 14.4081 8.54046 14.4081C6.12554 14.4081 4.04114 12.9939 3.06972 10.9488"
+                        stroke="white"
+                        strokeWidth="1.00886"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M10.4551 10.0846L8.31982 8.80854V6.05225"
+                        stroke="white"
+                        strokeWidth="1.00886"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </g>
 
-                <defs>
-                  <linearGradient
-                    id="timerGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stopColor="#8B5CF6" />
-                    <stop offset="50%" stopColor="#A855F7" />
-                    <stop offset="100%" stopColor="#EC4899" />
-                  </linearGradient>
-                </defs>
-              </svg>
+                  {/* Clock icon at end of progress (moves with progress) */}
+                  {circularProgress > 10 && (
+                    <g
+                      transform={`translate(${
+                        88 +
+                        70 *
+                          Math.sin(
+                            (Math.min(circularProgress, 100) / 100) *
+                              2 *
+                              Math.PI
+                          )
+                      }, ${
+                        88 -
+                        70 *
+                          Math.cos(
+                            (Math.min(circularProgress, 100) / 100) *
+                              2 *
+                              Math.PI
+                          )
+                      })`}
+                    >
+                      <svg
+                        x="-8.5"
+                        y="-8.5"
+                        width="17"
+                        height="17"
+                        viewBox="0 0 17 17"
+                        fill="none"
+                      >
+                        <path
+                          d="M2.4873 8.35491C2.4873 5.01161 5.19715 2.30176 8.54046 2.30176C11.8837 2.30176 14.5936 5.01161 14.5936 8.35491C14.5936 11.6975 11.8837 14.4081 8.54046 14.4081C6.12554 14.4081 4.04114 12.9939 3.06972 10.9488"
+                          stroke="white"
+                          strokeWidth="1.00886"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M10.4551 10.0846L8.31982 8.80854V6.05225"
+                          stroke="white"
+                          strokeWidth="1.00886"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </g>
+                  )}
+                  <defs>
+                    <linearGradient
+                      id="timerGradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
+                      <stop offset="0%" stopColor="#8B5CF6" />
+                      <stop offset="50%" stopColor="#A855F7" />
+                      <stop offset="100%" stopColor="#EC4899" />
+                    </linearGradient>
+                    <linearGradient
+                      id="readyGradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
+                      <stop offset="0%" stopColor="#10B981" />
+                      <stop offset="50%" stopColor="#059669" />
+                      <stop offset="100%" stopColor="#047857" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              )}
 
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-white text-3xl font-bold tracking-wider">
-                  {formatTime(timeUntilNextClaim, false) ||
-                    "22:14"}
+                <div className="text-white text-2xl font-bold tracking-wider">
+                  {isTaskUnlocked
+                    ? "Claim"
+                    : timeUntilNextClaim > 0
+                    ? formatTime(timeUntilNextClaim)
+                    : "00:00"}
                 </div>
-                <div className="text-gray-400 text-base mt-1">Next claim</div>
+                <div className="text-gray-400 text-base mt-1">
+                  {isTaskUnlocked ? "Task available" : "Next claim"}
+                </div>
               </div>
             </div>
 
@@ -290,7 +319,7 @@ const TasksSection = () => {
         <div className="flex-1">
           <h3 className="text-white text-lg font-semibold mb-4">Status</h3>
           <div className="grid grid-cols-5 gap-3 max-w-xs mx-auto lg:mx-0">
-            {generateStatusGrid()}
+           <TasksGrid totalTasks={tasks.length} />
           </div>
         </div>
       </div>

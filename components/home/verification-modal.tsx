@@ -1,11 +1,10 @@
 "use client";
 
-import { X } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 import { authApi, VerifyCodeData } from "@/lib/auth-api";

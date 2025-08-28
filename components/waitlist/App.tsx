@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import CopyButton from "../common/CopyButton";
 import { Button } from "../ui/button";
 import ReferralsCard from "./ReferralsCard";
-import TasksSection from "./TasksSection";
+import TasksSection from "./TasksSectionc";
 import Navbar from "../home/navbar";
 
 const App = () => {
@@ -93,8 +93,13 @@ const App = () => {
           <div className="grid lg:grid-cols-3 gap-6">
             <div className="bg-gradient-to-b  from-[#11042F] to-[#020106] rounded-2xl p-6 border border-[#2a2a4e]">
               <div className="flex items-start gap-4 mb-6">
-                <div className="size-32 relative ">
-                  <Image src={"/images/avatar.png"} alt="supa-dwag" fill />
+                <div className="size-32 relative rounded-2xl overflow-hidden ">
+                  <Image
+                    src={user?.avatarUrl || "/images/avatar.png"}
+                    alt={user?.username || "supa-dwag"}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">

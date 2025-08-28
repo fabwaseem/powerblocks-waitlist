@@ -21,6 +21,7 @@ interface User {
     thisMonth: number;
     total: number;
   };
+  avatarUrl?: string;
 }
 
 interface AuthState {

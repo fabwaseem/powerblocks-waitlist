@@ -2,14 +2,36 @@ import { api } from "@/lib/axios";
 
 // Task Types from backend
 export enum TaskType {
+  // Profile & Verification Tasks
   VERIFY_EMAIL = "VERIFY_EMAIL",
   VERIFY_PHONE_NUMBER = "VERIFY_PHONE_NUMBER",
+  CREATE_USERNAME = "CREATE_USERNAME",
+  SELECT_GENDER = "SELECT_GENDER",
+  ADD_AGE_DOB = "ADD_AGE_DOB",
+  VERIFY_LOCATION_COUNTRY = "VERIFY_LOCATION_COUNTRY",
+  VERIFY_LOCATION_CITY = "VERIFY_LOCATION_CITY",
+  ADD_PROFILE_PIC = "ADD_PROFILE_PIC",
+
+  // Social Media Tasks
+  FOLLOW_X_ACCOUNT = "FOLLOW_X_ACCOUNT",
+  FOLLOW_IG_ACCOUNT = "FOLLOW_IG_ACCOUNT",
+  FOLLOW_TG_ACCOUNT = "FOLLOW_TG_ACCOUNT",
+  FOLLOW_DISCORD_ACCOUNT = "FOLLOW_DISCORD_ACCOUNT",
+  JOIN_REDDIT = "JOIN_REDDIT",
+
+  // Engagement Tasks
+  ENABLE_WEB_PUSH = "ENABLE_WEB_PUSH",
+  ENABLE_2FA = "ENABLE_2FA",
+  MYSTERY_BOX_QUESTION = "MYSTERY_BOX_QUESTION",
+  RAFFLE_LOTTERY_QUESTION = "RAFFLE_LOTTERY_QUESTION",
+  CHECK_BLOG = "CHECK_BLOG",
+  WATCH_VIDEO = "WATCH_VIDEO",
+
   CONNECT_GOOGLE_ACCOUNT = "CONNECT_GOOGLE_ACCOUNT",
   CONNECT_TWITTER_ACCOUNT = "CONNECT_TWITTER_ACCOUNT",
   CONNECT_DISCORD_ACCOUNT = "CONNECT_DISCORD_ACCOUNT",
   CONNECT_TELEGRAM_ACCOUNT = "CONNECT_TELEGRAM_ACCOUNT",
   CONNECT_X_ACCOUNT = "CONNECT_X_ACCOUNT",
-  CONNECT_WALLET = "CONNECT_WALLET",
 }
 
 // Task Status from backend
@@ -35,7 +57,7 @@ export interface Task {
   isLocked: boolean;
   isCompleted: boolean;
   timeUntilUnlock?: number;
-  isNextTask:boolean
+  isNextTask: boolean;
 }
 
 // Task completion response
@@ -44,6 +66,12 @@ export interface TaskCompletionResponse {
   message: string;
   xpEarned: number;
   taskId: string;
+}
+
+export enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  OTHER = "OTHER",
 }
 
 // API functions
@@ -59,6 +87,62 @@ export const tasksApi = {
     const response = await api.post<TaskCompletionResponse>(
       `/tasks/${taskId}/complete`
     );
+    return response.data;
+  },
+
+  sendPhoneOtp: async (phoneNumber: string): Promise<{ message: string }> => {
+    const response = await api.post<{ message: string }>(
+      `/tasks/phone/send-otp`,
+      {
+        phoneNumber,
+      }
+    );
+    return response.data;
+  },
+
+  verifyPhoneOtp: async (
+    phoneNumber: string,
+    otp: string
+  ): Promise<{ message: string; success: boolean }> => {
+    const response = await api.post<{ message: string; success: boolean }>(
+      `/tasks/phone/verify-otp`,
+      {
+        phoneNumber,
+        otp,
+      }
+    );
+    return response.data;
+  },
+
+  updateUser: async (userData: {
+    username?: string;
+    gender?: Gender;
+    dob?: string;
+    country?: string;
+    city?: string;
+  }): Promise<{ success: boolean; message: string }> => {
+    const response = await api.put<{ success: boolean; message: string }>(
+      `/tasks/user/update`,
+      userData
+    );
+    return response.data;
+  },
+
+  uploadAvatar: async (
+    file: File
+  ): Promise<{
+    success: boolean;
+    message: string;
+    avatarUrl?: string;
+  }> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    console.log(formData);
+    const response = await api.post("/tasks/user/avatar", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   },
 };

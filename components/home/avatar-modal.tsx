@@ -214,11 +214,11 @@ export function AvatarModal({
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        <div className="relative">
+                        <div className="relative flex items-center justify-center">
                           <img
                             src={previewUrl!}
                             alt="Preview"
-                            className="w-full h-48 object-cover rounded-lg border border-gray-500"
+                            className="size-48 object-cover rounded-lg border border-gray-500 "
                           />
                           <button
                             type="button"
@@ -255,18 +255,6 @@ export function AvatarModal({
                     {isLoading ? "Uploading..." : "Upload Profile Picture"}
                   </Button>
                 </form>
-
-                <div className="mt-6 p-4 bg-gray-800/30 rounded-lg border border-gray-700">
-                  <h3 className="text-sm font-medium text-white mb-2">
-                    Upload Guidelines:
-                  </h3>
-                  <ul className="text-xs text-gray-400 space-y-1 text-left">
-                    <li>• Supported formats: JPEG, PNG, WebP</li>
-                    <li>• Maximum file size: 5MB</li>
-                    <li>• Recommended size: 400x400 pixels or larger</li>
-                    <li>• Square images work best for profile pictures</li>
-                  </ul>
-                </div>
               </div>
             </div>
           </div>

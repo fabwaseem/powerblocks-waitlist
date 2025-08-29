@@ -58,6 +58,9 @@ export interface Task {
   isCompleted: boolean;
   timeUntilUnlock?: number;
   isNextTask: boolean;
+  data: {
+    link?: string;
+  };
 }
 
 // Task completion response

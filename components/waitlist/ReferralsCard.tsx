@@ -5,6 +5,7 @@ import { useReferralStore } from "@/store/referrals";
 import { useAuthStore } from "@/store/auth";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 const ReferralsCard = () => {
   const { user, checkAuth } = useAuthStore();
@@ -149,7 +150,16 @@ const ReferralsCard = () => {
                 </div>
                 {getStatusBadge(referral.status, referral.id)}
                 <span className="text-[#A5A9C1] text-sm">
-                  #{referral.id.slice(0, 4)}...
+                  {referral.status === "COLLECTED" && (
+                    <Tooltip>
+                      <TooltipTrigger>
+                        #{referral.id.slice(0, 4)}...
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{referral.id}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                 </span>
               </div>
             ))

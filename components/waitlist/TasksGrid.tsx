@@ -132,16 +132,65 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
       return;
     }
 
-    // try {
-    //   const result = await completeTask(task.id);
-    //   if (result) {
-    //     toast.success(`Task completed! +${result.xpEarned} XP`);
-    //   } else {
-    //     toast.error("Failed to complete task");
-    //   }
-    // } catch (error) {
-    //   toast.error("Failed to complete task");
-    // }
+    if (task.taskType === TaskType.ENABLE_WEB_PUSH) {
+      if (Notification.permission === "denied") {
+        toast.error(
+          "Push notifications are disabled, please enable them in your browser settings"
+        );
+        return;
+      }
+      if (Notification.permission === "granted") {
+        handleCompleteTask(task);
+        return;
+      }
+      if (Notification.permission === "default") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            toast.success("Push notifications are enabled");
+            handleCompleteTask(task);
+          }
+          if (permission === "denied") {
+            toast.error(
+              "Push notifications are disabled, please enable them in your browser settings"
+            );
+            return;
+          }
+        });
+      }
+      return;
+    }
+
+    if (task.taskType === TaskType.ENABLE_2FA) {
+      handleCompleteTask(task);
+      return;
+    }
+
+    if (
+      task.taskType === TaskType.MYSTERY_BOX_QUESTION ||
+      task.taskType === TaskType.RAFFLE_LOTTERY_QUESTION ||
+      task.taskType === TaskType.CHECK_BLOG ||
+      task.taskType === TaskType.WATCH_VIDEO
+    ) {
+      if (task.data?.link) {
+        window.open(task.data.link, "_blank");
+        handleCompleteTask(task);
+        return;
+      }
+    }
+  };
+
+  const handleCompleteTask = async (task: Task) => {
+    try {
+      const result = await completeTask(task.id);
+      if (result) {
+        toast.success(`Task completed! +${result.xpEarned} XP`);
+        handleTaskSuccess();
+      } else {
+        toast.error("Failed to complete task");
+      }
+    } catch (error) {
+      toast.error("Failed to complete task");
+    }
   };
 
   const handleTaskSuccess = () => {
@@ -155,7 +204,6 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
       <PhoneVerificationModal
         open={phoneModalOpen}
         onOpenChange={setPhoneModalOpen}
-        taskId={selectedTaskId}
         onSuccess={handleTaskSuccess}
       />
       <UsernameModal

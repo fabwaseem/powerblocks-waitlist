@@ -15,14 +15,12 @@ import { useTaskStore } from "@/store/tasks";
 interface PhoneVerificationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  taskId: string;
   onSuccess?: () => void;
 }
 
 export function PhoneVerificationModal({
   open,
   onOpenChange,
-  taskId,
   onSuccess,
 }: PhoneVerificationModalProps) {
   const [step, setStep] = useState<"phone" | "otp">("phone");

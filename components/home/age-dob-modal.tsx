@@ -74,10 +74,7 @@ export function AgeDobModal({
     }
 
     const age = calculateAge(dateOfBirth);
-    if (age < 13) {
-      toast.error("You must be at least 13 years old");
-      return;
-    }
+
 
     if (age > 120) {
       toast.error("Please enter a valid date of birth");
@@ -153,9 +150,7 @@ export function AgeDobModal({
                         calendarClassName="bg-gray-900 border-gray-700"
                       />
                     </div>
-                    <p className="text-xs text-gray-400 mt-2">
-                      You must be at least 13 years old to use this service
-                    </p>
+  
                     {dateOfBirth && (
                       <p className="text-xs text-purple-400 mt-1">
                         Age: {calculateAge(dateOfBirth)} years
@@ -172,15 +167,7 @@ export function AgeDobModal({
                   </Button>
                 </form>
 
-                <div className="mt-6 p-4 bg-gray-800/30 rounded-lg border border-gray-700">
-                  <h3 className="text-sm font-medium text-white mb-2">
-                    Privacy Notice:
-                  </h3>
-                  <p className="text-xs text-gray-400">
-                    Your date of birth is used for age verification and will be
-                    kept secure and private.
-                  </p>
-                </div>
+
               </div>
             </div>
           </div>

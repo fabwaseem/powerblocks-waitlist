@@ -1,5 +1,6 @@
 import { walletApi } from "@/lib/api/wallet";
 import { api } from "@/lib/axios";
+import { OAuthProvider } from "@/types";
 import axios from "axios";
 import { create } from "zustand";
 
@@ -22,6 +23,16 @@ interface User {
     total: number;
   };
   avatarUrl?: string;
+  phoneVerified?: boolean;
+  oauthAccounts?: {
+    id: string;
+    provider: OAuthProvider;
+    username: string | null;
+    email: string;
+    displayName: string;
+    avatarUrl: string;
+    createdAt: Date;
+  }[];
 }
 
 interface AuthState {

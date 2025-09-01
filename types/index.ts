@@ -1,0 +1,7 @@
+export enum OAuthProvider {
+  GOOGLE = "GOOGLE",
+  TWITTER = "TWITTER",
+  INSTAGRAM = "INSTAGRAM",
+  DISCORD = "DISCORD",
+  TELEGRAM = "TELEGRAM",
+}

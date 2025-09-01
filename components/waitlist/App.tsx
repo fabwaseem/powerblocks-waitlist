@@ -70,6 +70,7 @@ const App = () => {
         <div className="flex justify-between lg:items-center mb-8 flex-col lg:flex-row gap-4">
           <h1 className="text-2xl lg:text-3xl font-bold text-white">
             Hi Dawg, welcome back!
+            <button>Google Connect</button>
           </h1>
 
           {/* Social Media Icons */}
@@ -109,10 +110,14 @@ const App = () => {
                     <Pencil className="w-4 h-4 text-[#A5A9C1]" />
                   </div>
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-[#A5A9C1] text-sm">#6421</span>
-                    <CopyButton text={``} />
+                    <span className="text-[#A5A9C1] text-sm">
+                      #{user?.id.slice(0, 4)}
+                    </span>
+                    <CopyButton text={user?.id} />
                   </div>
-                  <div className="text-3xl font-bold text-white mb-1">100</div>
+                  <div className="text-3xl font-bold text-white mb-1">
+                    {user?.xpPoints?.total}
+                  </div>
                   <div className="text-[#A5A9C1] text-sm">
                     Available PR points
                   </div>

@@ -14,7 +14,7 @@ const TasksSection = () => {
     completeTask,
     completingTask,
   } = useTaskStore();
-  const { checkAuth } = useAuthStore();
+  const { user, checkAuth } = useAuthStore();
 
   const [timeUntilNextClaim, setTimeUntilNextClaim] = useState(0);
   const [isTaskUnlocked, setIsTaskUnlocked] = useState(false);
@@ -108,11 +108,13 @@ const TasksSection = () => {
 
   return (
     <div className="bg-gradient-to-b from-[#11042F] to-[#020106] lg:col-span-2 rounded-2xl border border-[#2a2a4e] p-6 relative overflow-auto">
-      <div className="inset-0 absolute bg-black/50 w-full h-full z-10 flex items-center justify-center">
-        <Button variant={"outline"} onClick={() => setPhoneModalOpen(true)}>
-          Verify Your Account to Unlock
-        </Button>
-      </div>
+      {!user?.phoneVerified && (
+        <div className="inset-0 absolute bg-black/50 w-full h-full z-10 flex items-center justify-center">
+          <Button variant={"outline"} onClick={() => setPhoneModalOpen(true)}>
+            Verify Your Account to Unlock
+          </Button>
+        </div>
+      )}
 
       <div className="relative ">
         <h2 className="text-xl font-bold text-white mb-6">Collect Points</h2>

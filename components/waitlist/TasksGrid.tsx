@@ -5,6 +5,10 @@ import { AgeDobModal } from "@/components/home/age-dob-modal";
 import { CountryModal } from "@/components/home/country-modal";
 import { CityModal } from "@/components/home/city-modal";
 import { AvatarModal } from "@/components/home/avatar-modal";
+import { TwitterTaskModal } from "@/components/home/twitter-task-modal";
+import { InstagramTaskModal } from "@/components/home/instagram-task-modal";
+import { TelegramTaskModal } from "@/components/home/telegram-task-modal";
+import { DiscordTaskModal } from "@/components/home/discord-task-modal";
 import { Gender, Task, TaskType } from "@/lib/api/tasks";
 import { useAuthStore } from "@/store/auth";
 import { useTaskStore } from "@/store/tasks";
@@ -20,6 +24,10 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [cityModalOpen, setCityModalOpen] = useState(false);
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
+  const [twitterModalOpen, setTwitterModalOpen] = useState(false);
+  const [instagramModalOpen, setInstagramModalOpen] = useState(false);
+  const [telegramModalOpen, setTelegramModalOpen] = useState(false);
+  const [discordModalOpen, setDiscordModalOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string>("");
   const { user, checkAuth } = useAuthStore();
 
@@ -165,6 +173,26 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
       return;
     }
 
+    if (task.taskType === TaskType.FOLLOW_X_ACCOUNT) {
+      setTwitterModalOpen(true);
+      return;
+    }
+
+    if (task.taskType === TaskType.FOLLOW_IG_ACCOUNT) {
+      setInstagramModalOpen(true);
+      return;
+    }
+
+    if (task.taskType === TaskType.FOLLOW_TG_ACCOUNT) {
+      setTelegramModalOpen(true);
+      return;
+    }
+
+    if (task.taskType === TaskType.FOLLOW_DISCORD_ACCOUNT) {
+      setDiscordModalOpen(true);
+      return;
+    }
+
     if (
       task.taskType === TaskType.MYSTERY_BOX_QUESTION ||
       task.taskType === TaskType.RAFFLE_LOTTERY_QUESTION ||
@@ -235,6 +263,36 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
         open={avatarModalOpen}
         onOpenChange={setAvatarModalOpen}
         onSuccess={handleTaskSuccess}
+      />
+      <TwitterTaskModal
+        open={twitterModalOpen}
+        onOpenChange={setTwitterModalOpen}
+        onSuccess={handleTaskSuccess}
+        task={tasks.find((task) => task.taskType === TaskType.FOLLOW_X_ACCOUNT)}
+      />
+      <InstagramTaskModal
+        open={instagramModalOpen}
+        onOpenChange={setInstagramModalOpen}
+        onSuccess={handleTaskSuccess}
+        task={tasks.find(
+          (task) => task.taskType === TaskType.FOLLOW_IG_ACCOUNT
+        )}
+      />
+      <TelegramTaskModal
+        open={telegramModalOpen}
+        onOpenChange={setTelegramModalOpen}
+        onSuccess={handleTaskSuccess}
+        task={tasks.find(
+          (task) => task.taskType === TaskType.FOLLOW_TG_ACCOUNT
+        )}
+      />
+      <DiscordTaskModal
+        open={discordModalOpen}
+        onOpenChange={setDiscordModalOpen}
+        onSuccess={handleTaskSuccess}
+        task={tasks.find(
+          (task) => task.taskType === TaskType.FOLLOW_DISCORD_ACCOUNT
+        )}
       />
     </>
   );

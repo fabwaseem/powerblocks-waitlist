@@ -26,12 +26,6 @@ export enum TaskType {
   RAFFLE_LOTTERY_QUESTION = "RAFFLE_LOTTERY_QUESTION",
   CHECK_BLOG = "CHECK_BLOG",
   WATCH_VIDEO = "WATCH_VIDEO",
-
-  CONNECT_GOOGLE_ACCOUNT = "CONNECT_GOOGLE_ACCOUNT",
-  CONNECT_TWITTER_ACCOUNT = "CONNECT_TWITTER_ACCOUNT",
-  CONNECT_DISCORD_ACCOUNT = "CONNECT_DISCORD_ACCOUNT",
-  CONNECT_TELEGRAM_ACCOUNT = "CONNECT_TELEGRAM_ACCOUNT",
-  CONNECT_X_ACCOUNT = "CONNECT_X_ACCOUNT",
 }
 
 // Task Status from backend
@@ -60,6 +54,9 @@ export interface Task {
   isNextTask: boolean;
   data: {
     link?: string;
+    username?: string;
+    groupName?: string;
+    serverName?: string;
   };
 }
 
@@ -146,6 +143,58 @@ export const tasksApi = {
         "Content-Type": "multipart/form-data",
       },
     });
+    return response.data;
+  },
+
+  verifyTwitterFollow: async (): Promise<{
+    isFollowing: boolean;
+    message: string;
+    xpAwarded?: number;
+  }> => {
+    const response = await api.post<{
+      isFollowing: boolean;
+      message: string;
+      xpAwarded?: number;
+    }>("/tasks/twitter/verify-follow");
+    return response.data;
+  },
+
+  verifyInstagramFollow: async (): Promise<{
+    isFollowing: boolean;
+    message: string;
+    xpAwarded?: number;
+  }> => {
+    const response = await api.post<{
+      isFollowing: boolean;
+      message: string;
+      xpAwarded?: number;
+    }>("/tasks/instagram/verify-follow");
+    return response.data;
+  },
+
+  verifyTelegramJoin: async (): Promise<{
+    isFollowing: boolean;
+    message: string;
+    xpAwarded?: number;
+  }> => {
+    const response = await api.post<{
+      isFollowing: boolean;
+      message: string;
+      xpAwarded?: number;
+    }>("/tasks/telegram/verify-follow");
+    return response.data;
+  },
+
+  verifyDiscordJoin: async (): Promise<{
+    isJoined: boolean;
+    message: string;
+    xpAwarded?: number;
+  }> => {
+    const response = await api.post<{
+      isJoined: boolean;
+      message: string;
+      xpAwarded?: number;
+    }>("/tasks/discord/verify-join");
     return response.data;
   },
 };

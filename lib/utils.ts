@@ -18,3 +18,11 @@ export const formatTime = (seconds: number, showSeconds: boolean = true) => {
   }
   return `${hours}:${minutes}`;
 };
+
+export const getXProfileLinkFromUsername = (username: string) => {
+  return `https://x.com/${username}`;
+};
+
+export const getInstagramProfileLinkFromUsername = (username: string) => {
+  return `https://instagram.com/${username}`;
+};

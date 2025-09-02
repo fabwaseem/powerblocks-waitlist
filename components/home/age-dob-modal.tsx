@@ -3,7 +3,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-hot-toast";
 
@@ -11,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 import { tasksApi } from "@/lib/api/tasks";
+import { Input } from "../ui/input";
 
 interface AgeDobModalProps {
   open: boolean;
@@ -75,7 +75,6 @@ export function AgeDobModal({
 
     const age = calculateAge(dateOfBirth);
 
-
     if (age > 120) {
       toast.error("Please enter a valid date of birth");
       return;
@@ -87,13 +86,6 @@ export function AgeDobModal({
   };
 
   const isLoading = updateDobMutation.isPending;
-
-  // Calculate max date (13 years ago) and min date (120 years ago)
-  const maxDate = new Date();
-  maxDate.setFullYear(maxDate.getFullYear() - 13);
-
-  const minDate = new Date();
-  minDate.setFullYear(minDate.getFullYear() - 120);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -132,25 +124,16 @@ export function AgeDobModal({
                       Date of Birth
                     </label>
                     <div className="w-full">
-                      <DatePicker
-                        selected={dateOfBirth}
-                        onChange={(date: Date | null) => setDateOfBirth(date)}
-                        dateFormat="dd/MM/yyyy"
-                        placeholderText="Select your date of birth"
-                        maxDate={maxDate}
-                        minDate={minDate}
-                        showYearDropdown
-                        showMonthDropdown
-                        dropdownMode="select"
-                        yearDropdownItemNumber={100}
-                        scrollableYearDropdown
+                      <Input
+                        type="date"
+                        value={dateOfBirth?.toISOString().split("T")[0]}
+                        onChange={(e) =>
+                          setDateOfBirth(new Date(e.target.value))
+                        }
                         disabled={isLoading}
-                        className="w-full bg-transparent border border-gray-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20"
-                        wrapperClassName="w-full"
-                        calendarClassName="bg-gray-900 border-gray-700"
                       />
                     </div>
-  
+
                     {dateOfBirth && (
                       <p className="text-xs text-purple-400 mt-1">
                         Age: {calculateAge(dateOfBirth)} years
@@ -166,8 +149,6 @@ export function AgeDobModal({
                     {isLoading ? "Updating..." : "Update Date of Birth"}
                   </Button>
                 </form>
-
-
               </div>
             </div>
           </div>

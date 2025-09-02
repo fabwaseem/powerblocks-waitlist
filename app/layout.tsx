@@ -3,8 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryProvider } from "@/context/query-provider";
-import { AuthProvider } from "@/context/auth-provider";
 import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "@/context/auth-provider";
 
 const aeonik = localFont({
   src: [

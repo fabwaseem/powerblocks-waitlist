@@ -10,41 +10,59 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
 import { tasksApi } from "@/lib/api/tasks";
+import { usersApi } from "@/lib/api/users";
 
 interface UsernameModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  type?: "task" | "update";
+  username?: string;
 }
 
 export function UsernameModal({
   open,
   onOpenChange,
   onSuccess,
+  type = "task",
+  username,
 }: UsernameModalProps) {
-  const [username, setUsername] = useState("");
+  const [newUsername, setNewUsername] = useState(username || "");
 
   // Reset state when modal opens
   useEffect(() => {
     if (open) {
-      setUsername("");
+      setNewUsername(username || "");
     }
   }, [open]);
 
   const updateUsernameMutation = useMutation({
-    mutationFn: (username: string) => tasksApi.updateUser({ username }),
+    mutationFn: (username: string) =>
+      type === "task"
+        ? tasksApi.updateUser({ username })
+        : usersApi.updateUser({ username }),
     onSuccess: (data) => {
       if (data.success) {
-        toast.success("Username created successfully!");
+        toast.success(
+          type === "task"
+            ? "Username created successfully!"
+            : "Username updated successfully!"
+        );
         onSuccess?.();
         onOpenChange(false);
       } else {
-        toast.error(data.message || "Failed to create username");
+        toast.error(
+          type === "task"
+            ? "Failed to create username"
+            : "Failed to update username"
+        );
       }
     },
     onError: (error: any) => {
       toast.error(
-        error?.response?.data?.message || "Failed to create username"
+        type === "task"
+          ? "Failed to create username"
+          : "Failed to update username"
       );
     },
   });
@@ -75,23 +93,23 @@ export function UsernameModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validationError = validateUsername(username);
+    const validationError = validateUsername(newUsername);
     if (validationError) {
       toast.error(validationError);
       return;
     }
 
-    updateUsernameMutation.mutate(username);
+    updateUsernameMutation.mutate(newUsername);
   };
 
   const handleUsernameChange = (value: string) => {
     // Remove any non-alphanumeric characters except underscores
     const cleaned = value.replace(/[^a-zA-Z0-9_]/g, "");
-    setUsername(cleaned);
+    setNewUsername(cleaned);
   };
 
   const isLoading = updateUsernameMutation.isPending;
-  const validationError = username ? validateUsername(username) : null;
+  const validationError = newUsername ? validateUsername(newUsername) : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -110,15 +128,19 @@ export function UsernameModal({
             <X className="h-5 w-5" />
           </button>
           <div className="flex flex-col items-center justify-center h-full">
-            <DialogTitle className="sr-only">Create Username</DialogTitle>
+            <DialogTitle className="sr-only">
+              {type === "task" ? "Create Username" : "Update Username"}
+            </DialogTitle>
 
             <div className="p-8 w-full">
               <div className="text-center">
                 <h2 className="text-2xl font-bold text-white mb-2">
-                  Create Username
+                  {type === "task" ? "Create Username" : "Update Username"}
                 </h2>
                 <p className="text-gray-400 text-sm mb-8">
-                  Choose a unique username for your account
+                  {type === "task"
+                    ? "Choose a unique username for your account"
+                    : "Update your username"}
                 </p>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -132,8 +154,8 @@ export function UsernameModal({
                     <Input
                       id="username"
                       type="text"
-                      placeholder="your_username"
-                      value={username}
+                      placeholder="Enter your username"
+                      value={newUsername}
                       onChange={(e) => handleUsernameChange(e.target.value)}
                       className="w-full bg-transparent border border-gray-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20"
                       disabled={isLoading}
@@ -156,11 +178,17 @@ export function UsernameModal({
                   <Button
                     type="submit"
                     disabled={
-                      isLoading || !username.trim() || !!validationError
+                      isLoading || !newUsername.trim() || !!validationError
                     }
                     className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isLoading ? "Creating..." : "Create Username"}
+                    {isLoading
+                      ? type === "task"
+                        ? "Creating..."
+                        : "Updating..."
+                      : null}
+                    {!isLoading &&
+                      (type === "task" ? "Create Username" : "Update Username")}
                   </Button>
                 </form>
 

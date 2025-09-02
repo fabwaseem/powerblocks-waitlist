@@ -10,7 +10,6 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
 import { tasksApi } from "@/lib/api/tasks";
-import { useTaskStore } from "@/store/tasks";
 
 interface PhoneVerificationModalProps {
   open: boolean;

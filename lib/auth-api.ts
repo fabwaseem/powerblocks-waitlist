@@ -1,4 +1,5 @@
-import { api } from './axios'
+import { User } from "@/types";
+import { api } from "./axios";
 
 export interface SendCodeData {
   username?: string; // Required for signup
@@ -9,48 +10,52 @@ export interface SendCodeData {
 }
 
 export interface VerifyCodeData {
-  email: string
-  code: string
-  type: 'signup' | 'signin' | 'waitlist'
+  email: string;
+  code: string;
+  type: "signup" | "signin" | "waitlist";
 }
 
 export interface AuthResponse {
-  accessToken: string
+  accessToken: string;
   user: {
-    id: string
-    username: string
-    email: string
-    createdAt: Date
-    lastLogin?: Date
+    id: string;
+    username: string;
+    email: string;
+    createdAt: Date;
+    lastLogin?: Date;
     depositWalletAddresses?: {
-      evm?: { address: string; totalAmount: number; availableAmount: number }
-      solana?: { address: string; totalAmount: number; availableAmount: number }
-      tron?: { address: string; totalAmount: number; availableAmount: number }
-    }
-  }
+      evm?: { address: string; totalAmount: number; availableAmount: number };
+      solana?: {
+        address: string;
+        totalAmount: number;
+        availableAmount: number;
+      };
+      tron?: { address: string; totalAmount: number; availableAmount: number };
+    };
+  };
 }
 
 export interface SendCodeResponse {
-  message: string
+  message: string;
 }
 
 export const authApi = {
   sendCode: async (data: SendCodeData): Promise<SendCodeResponse> => {
-    const response = await api.post('/auth/send-code', data)
-    return response.data
+    const response = await api.post("/auth/send-code", data);
+    return response.data;
   },
 
   verifyCode: async (data: VerifyCodeData): Promise<AuthResponse> => {
-    const response = await api.post('/auth/verify-code', data)
-    return response.data
+    const response = await api.post("/auth/verify-code", data);
+    return response.data;
   },
 
   logout: async (): Promise<void> => {
-    await api.post('/auth/logout')
+    await api.post("/auth/logout");
   },
 
-  getMe: async () => {
-    const response = await api.get('/auth/me')
-    return response.data
+  getMe: async (): Promise<User> => {
+    const response = await api.get("/auth/me");
+    return response.data;
   },
-}
+};

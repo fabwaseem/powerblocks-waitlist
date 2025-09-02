@@ -8,7 +8,7 @@ import { toast } from "react-hot-toast";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 import { authApi, VerifyCodeData } from "@/lib/auth-api";
-import { useAuthStore } from "@/store/auth";
+import { useAuth } from "@/hooks/use-auth";
 
 interface VerificationModalProps {
   open: boolean;
@@ -29,7 +29,7 @@ export function VerificationModal({
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const { setUser, setIsAuthenticated } = useAuthStore();
+  const { refetch } = useAuth();
 
   // Timer countdown
   useEffect(() => {
@@ -65,11 +65,8 @@ export function VerificationModal({
   const verifyMutation = useMutation({
     mutationFn: authApi.verifyCode,
     onSuccess: (data) => {
-      setUser({
-        ...data.user,
-        depositWalletAddresses: data.user.depositWalletAddresses,
-      });
-      setIsAuthenticated(true);
+      refetch();
+      localStorage.setItem("accessToken", data.accessToken);
       toast.success(
         type === "signup"
           ? "Account created successfully!"

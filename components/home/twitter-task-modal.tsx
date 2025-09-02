@@ -14,8 +14,8 @@ import { useOAuth } from "@/hooks/use-oauth";
 import { Task, tasksApi } from "@/lib/api/tasks";
 import toast from "react-hot-toast";
 import { getXProfileLinkFromUsername } from "@/lib/utils";
-import { useAuthStore } from "@/store/auth";
 import { OAuthProvider } from "@/types";
+import { useAuth } from "@/hooks/use-auth";
 
 interface TwitterTaskModalProps {
   open: boolean;
@@ -33,7 +33,7 @@ export function TwitterTaskModal({
   const [isConnected, setIsConnected] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const { connectOAuth, loading: isConnecting, error: oauthError } = useOAuth();
-  const { user, checkAuth } = useAuthStore();
+  const { user   } = useAuth();
 
   const handleConnectTwitter = async () => {
     try {

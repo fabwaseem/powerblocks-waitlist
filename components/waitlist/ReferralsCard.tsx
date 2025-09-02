@@ -1,21 +1,17 @@
 import { Check, LinkIcon } from "lucide-react";
 import React from "react";
 import CopyButton from "../common/CopyButton";
-import { useReferralStore } from "@/store/referrals";
-import { useAuthStore } from "@/store/auth";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { useClaimReferralReward, useReferralInfo } from "@/hooks/use-referrals";
+import { useAuth } from "@/hooks/use-auth";
 
 const ReferralsCard = () => {
-  const { user, checkAuth } = useAuthStore();
-  const {
-    referralInfo,
-    loading,
-    claimReferralReward,
-    claimReferralRewardLoading,
-    fetchReferralInfo,
-  } = useReferralStore();
+  const { user } = useAuth();
+  const { data: referralInfo, isLoading } = useReferralInfo();
+  const { mutate: claimReferralReward, isPending: claimReferralRewardLoading } =
+    useClaimReferralReward();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -39,16 +35,7 @@ const ReferralsCard = () => {
             size={"sm"}
             className="w-max"
             onClick={async () => {
-              const result = await claimReferralReward(referralId);
-              if (result.success) {
-                toast.success("Referral reward claimed successfully! +500 XP");
-                // Refetch user data to update XP points
-                await checkAuth();
-                // Force refetch referral info to update the UI
-                await fetchReferralInfo(true);
-              } else {
-                toast.error("Failed to claim referral reward");
-              }
+              claimReferralReward(referralId);
             }}
             disabled={claimReferralRewardLoading}
           >
@@ -92,13 +79,13 @@ const ReferralsCard = () => {
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-white/10 border border-[#6C7793] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-[#96A3F6] mb-1">
-              {loading ? "-" : referralInfo?.stats.pendingReferrals || 0}
+              {isLoading ? "-" : referralInfo?.stats.pendingReferrals || 0}
             </div>
             <div className="text-[#A5A9C1] text-sm">Pending Referrals</div>
           </div>
           <div className="bg-white/10 border border-[#6C7793] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-[#96A3F6] mb-1">
-              {loading ? "-" : referralInfo?.stats.successfulReferrals || 0}
+              {isLoading ? "-" : referralInfo?.stats.successfulReferrals || 0}
             </div>
             <div className="text-[#A5A9C1] text-sm">Successful Referrals</div>
           </div>
@@ -131,7 +118,7 @@ const ReferralsCard = () => {
 
         {/* Table Rows */}
         <div className="space-y-3 ">
-          {loading ? (
+          {isLoading ? (
             <div className="text-center text-[#A5A9C1] py-8">
               Loading referral history...
             </div>

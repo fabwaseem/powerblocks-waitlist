@@ -1,25 +1,14 @@
 "use client";
 
-import { useAuthLogout } from "@/hooks/use-auth-logout";
-import { useAuthStore } from "@/store/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { AuthModal } from "./auth-modal";
 import { UserDropdown } from "./user-dropdown";
+import { useAuth, useLogout } from "@/hooks/use-auth";
 
 export default function Navbar() {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-
-  const { isAuthenticated, user, loading } = useAuthStore();
-  const handleLogout = useAuthLogout();
-
-  const onLogout = async () => {
-    await handleLogout();
-    setIsUserDropdownOpen(false);
-  };
+  const { isAuthenticated, user, loading } = useAuth();
+  const { mutate: logout } = useLogout();
 
   return (
     <>
@@ -48,54 +37,16 @@ export default function Navbar() {
               <>
                 {isAuthenticated && user ? (
                   <div className="flex items-center gap-3">
-                    <UserDropdown user={user} onLogout={onLogout} />
-                    {/* <DropdownMenu onOpenChange={setIsUserDropdownOpen}>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="text-white flex hover:bg-neutral-700 items-center gap-2 hidden sm:flex"
-                        >
-                          <User className="w-4 h-4" />
-                          {user.username}
-                          <ChevronDown
-                            className={`h-4 w-4 transition-transform duration-200 ${
-                              isUserDropdownOpen ? 'rotate-180' : 'rotate-0'
-                            }`}
-                          />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem disabled className="text-gray-400">
-                          {user.email}
-                        </DropdownMenuItem>
-
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer"
-                          onClick={onLogout}
-                        >
-                          <LogOut className="w-4 h-4 mr-2" />
-                          Logout
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu> */}
+                    <UserDropdown user={user} onLogout={() => logout()} />
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3">
-                    {/* <Button
-                      onClick={() => setAuthModalOpen(true)}
-                    >
-                      Join Pre-Launch
-                    </Button> */}
-                  </div>
+                  <div className="flex items-center gap-3"></div>
                 )}
               </>
             )}
           </div>
         </div>
       </header>
-
-      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </>
   );
 }

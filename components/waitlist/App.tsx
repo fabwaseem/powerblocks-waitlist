@@ -6,52 +6,25 @@ import {
   TelegramIcon,
   XIcon,
 } from "@/components/common/icons";
-import { useAuthStore } from "@/store/auth";
-import { useReferralStore } from "@/store/referrals";
-import { useTaskStore } from "@/store/tasks";
 import { Pencil } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CopyButton from "../common/CopyButton";
+import Navbar from "../home/navbar";
+import { UsernameModal } from "../home/username-modal";
 import { Button } from "../ui/button";
 import ReferralsCard from "./ReferralsCard";
-import TasksSection from "./TasksSectionc";
-import Navbar from "../home/navbar";
+import TasksSection from "./TasksSection";
+import { useAuth } from "@/hooks/use-auth";
 
 const App = () => {
-  const { user, isAuthenticated } = useAuthStore();
-  const {
-    referralInfo,
-    loading,
-    fetchReferralInfo,
-    clearReferralInfo,
-    claimReferralReward,
-    claimReferralRewardLoading,
-  } = useReferralStore();
-  const { checkAuth } = useAuthStore();
-  const {
-    tasks,
-    loading: tasksLoading,
-    fetchTasks,
-    completeTask,
-    completingTask,
-  } = useTaskStore();
-  const [newUsername, setNewUsername] = useState(user?.username);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    if (user) {
-      setNewUsername(user.username);
-    }
-  }, [user]);
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
 
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      fetchReferralInfo();
-      fetchTasks();
-    } else {
-      clearReferralInfo();
-    }
-  }, [isAuthenticated, user, fetchReferralInfo, clearReferralInfo]);
+  const handleUpdateUsernameSuccess = () => {
+    setIsEditingUsername(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white p-4 lg:p-6 relative">
@@ -70,7 +43,6 @@ const App = () => {
         <div className="flex justify-between lg:items-center mb-8 flex-col lg:flex-row gap-4">
           <h1 className="text-2xl lg:text-3xl font-bold text-white">
             Hi Dawg, welcome back!
-            <button>Google Connect</button>
           </h1>
 
           {/* Social Media Icons */}
@@ -105,9 +77,15 @@ const App = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-white font-medium">
-                      {newUsername}
+                      {user?.username}
                     </span>
-                    <Pencil className="w-4 h-4 text-[#A5A9C1]" />
+                    <Button
+                      size={"icon"}
+                      variant={"ghost"}
+                      onClick={() => setIsEditingUsername(true)}
+                    >
+                      <Pencil className="w-4 h-4 text-[#A5A9C1]" />
+                    </Button>
                   </div>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-[#A5A9C1] text-sm">
@@ -170,6 +148,14 @@ const App = () => {
           <ReferralsCard />
         </div>
       </div>
+
+      <UsernameModal
+        open={isEditingUsername}
+        onOpenChange={setIsEditingUsername}
+        onSuccess={handleUpdateUsernameSuccess}
+        username={user?.username || ""}
+        type="update"
+      />
     </div>
   );
 };

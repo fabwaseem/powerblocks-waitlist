@@ -1,17 +1,14 @@
-import { PhoneVerificationModal } from "@/components/home/phone-verification-modal";
-import { UsernameModal } from "@/components/home/username-modal";
-import { GenderModal } from "@/components/home/gender-modal";
 import { AgeDobModal } from "@/components/home/age-dob-modal";
-import { CountryModal } from "@/components/home/country-modal";
-import { CityModal } from "@/components/home/city-modal";
 import { AvatarModal } from "@/components/home/avatar-modal";
+import { CityModal } from "@/components/home/city-modal";
+import { CountryModal } from "@/components/home/country-modal";
+import { GenderModal } from "@/components/home/gender-modal";
+import { PhoneVerificationModal } from "@/components/home/phone-verification-modal";
 import { TwitterTaskModal } from "@/components/home/twitter-task-modal";
-import { InstagramTaskModal } from "@/components/home/instagram-task-modal";
-import { TelegramTaskModal } from "@/components/home/telegram-task-modal";
-import { DiscordTaskModal } from "@/components/home/discord-task-modal";
-import { Gender, Task, TaskType } from "@/lib/api/tasks";
-import { useAuthStore } from "@/store/auth";
-import { useTaskStore } from "@/store/tasks";
+import { UsernameModal } from "@/components/home/username-modal";
+import { useAuth } from "@/hooks/use-auth";
+import { useCompleteTask, useTasks } from "@/hooks/use-tasks";
+import { Task, TaskType } from "@/lib/api/tasks";
 import { CheckIcon, FlameIcon, LockIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -25,19 +22,11 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
   const [cityModalOpen, setCityModalOpen] = useState(false);
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
   const [twitterModalOpen, setTwitterModalOpen] = useState(false);
-  const [instagramModalOpen, setInstagramModalOpen] = useState(false);
-  const [telegramModalOpen, setTelegramModalOpen] = useState(false);
-  const [discordModalOpen, setDiscordModalOpen] = useState(false);
-  const [selectedTaskId, setSelectedTaskId] = useState<string>("");
-  const { user, checkAuth } = useAuthStore();
 
-  const {
-    tasks,
-    loading: tasksLoading,
-    fetchTasks,
-    completeTask,
-    completingTask,
-  } = useTaskStore();
+  const { data: tasks, refetch } = useTasks();
+  const { refetch: refetchAuth } = useAuth();
+
+  const { mutate: completeTask, isPending: completingTask } = useCompleteTask();
 
   const gridItems = [];
 
@@ -45,7 +34,7 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
   const gridSize = totalTasks;
 
   for (let i = 0; i < gridSize; i++) {
-    const task = tasks[i];
+    const task = tasks?.[i];
     let icon = "lock";
     let bgColor = "bg-gray-700/30";
     let borderColor = "border-gray-600";
@@ -99,13 +88,12 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
     );
   }
 
-  const handleTaskClick = async (task: Task) => {
+  const handleTaskClick = async (task?: Task) => {
     if (!task || task.isCompleted || task.isLocked || !task.isNextTask) {
       return;
     }
 
     if (task.taskType === TaskType.VERIFY_PHONE_NUMBER) {
-      setSelectedTaskId(task.id);
       setPhoneModalOpen(true);
       return;
     }
@@ -168,28 +156,22 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
       return;
     }
 
-    if (task.taskType === TaskType.ENABLE_2FA) {
-      handleCompleteTask(task);
-      return;
-    }
-
     if (task.taskType === TaskType.FOLLOW_X_ACCOUNT) {
       setTwitterModalOpen(true);
       return;
     }
 
-    if (task.taskType === TaskType.FOLLOW_IG_ACCOUNT) {
-      setInstagramModalOpen(true);
-      return;
-    }
-
-    if (task.taskType === TaskType.FOLLOW_TG_ACCOUNT) {
-      setTelegramModalOpen(true);
-      return;
-    }
-
-    if (task.taskType === TaskType.FOLLOW_DISCORD_ACCOUNT) {
-      setDiscordModalOpen(true);
+    if (
+      task.taskType === TaskType.FOLLOW_IG_ACCOUNT ||
+      task.taskType === TaskType.FOLLOW_TG_ACCOUNT ||
+      task.taskType === TaskType.FOLLOW_DISCORD_ACCOUNT ||
+      task.taskType === TaskType.JOIN_REDDIT
+    ) {
+      if (task.data?.link) {
+        window.open(task.data.link, "_blank");
+        handleCompleteTask(task);
+        return;
+      }
       return;
     }
 
@@ -209,26 +191,27 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
 
   const handleCompleteTask = async (task: Task) => {
     try {
-      const result = await completeTask(task.id);
-      if (result) {
-        toast.success(`Task completed! +${result.xpEarned} XP`);
-        handleTaskSuccess();
-      } else {
-        toast.error("Failed to complete task");
-      }
+      completeTask(task.id, {
+        onSuccess: (result) => {
+          toast.success(`Task completed! +${result.xpEarned} XP`);
+          handleTaskSuccess();
+        },
+      });
     } catch (error) {
       toast.error("Failed to complete task");
     }
   };
 
   const handleTaskSuccess = () => {
-    fetchTasks();
-    checkAuth();
+    refetch();
+    refetchAuth();
   };
 
   return (
     <>
-      {gridItems}
+      <div className="flex flex-wrap justify-center gap-3 max-w-xs mx-auto lg:mx-0 ">
+        {gridItems}
+      </div>
       <PhoneVerificationModal
         open={phoneModalOpen}
         onOpenChange={setPhoneModalOpen}
@@ -268,30 +251,8 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
         open={twitterModalOpen}
         onOpenChange={setTwitterModalOpen}
         onSuccess={handleTaskSuccess}
-        task={tasks.find((task) => task.taskType === TaskType.FOLLOW_X_ACCOUNT)}
-      />
-      <InstagramTaskModal
-        open={instagramModalOpen}
-        onOpenChange={setInstagramModalOpen}
-        onSuccess={handleTaskSuccess}
-        task={tasks.find(
-          (task) => task.taskType === TaskType.FOLLOW_IG_ACCOUNT
-        )}
-      />
-      <TelegramTaskModal
-        open={telegramModalOpen}
-        onOpenChange={setTelegramModalOpen}
-        onSuccess={handleTaskSuccess}
-        task={tasks.find(
-          (task) => task.taskType === TaskType.FOLLOW_TG_ACCOUNT
-        )}
-      />
-      <DiscordTaskModal
-        open={discordModalOpen}
-        onOpenChange={setDiscordModalOpen}
-        onSuccess={handleTaskSuccess}
-        task={tasks.find(
-          (task) => task.taskType === TaskType.FOLLOW_DISCORD_ACCOUNT
+        task={tasks?.find(
+          (task) => task.taskType === TaskType.FOLLOW_X_ACCOUNT
         )}
       />
     </>

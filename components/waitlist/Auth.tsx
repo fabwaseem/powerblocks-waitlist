@@ -239,7 +239,7 @@ const Auth = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter email address"
-              className="max-w-md h-13 border-white/30 backdrop-blur-lg"
+              className="w-full h-13 border-white/30 backdrop-blur-lg"
             />
             <Button
               className="h-13 uppercase font-bold glow"

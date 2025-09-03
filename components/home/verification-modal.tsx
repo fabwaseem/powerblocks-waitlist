@@ -197,7 +197,6 @@ export function VerificationModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="w-full max-w-lg! min-h-[500px] mx-4 p-0  border border-white/10 overflow-hidden rounded-xl "
         showCloseButton={false}
         style={{
           background: "linear-gradient(to bottom, #11042F, #04010E)",
@@ -213,7 +212,7 @@ export function VerificationModal({
           <div className="flex flex-col items-center justify-center h-full">
             <DialogTitle className="sr-only">One-Time Password</DialogTitle>
 
-            <div className="p-8">
+            <div className="p-4 lg:p-8">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-white mb-6">
                   One-Time Password
@@ -242,7 +241,7 @@ export function VerificationModal({
                       }
                       onKeyDown={(e) => handleKeyDown(index, e)}
                       onPaste={(e) => handlePaste(index, e)}
-                      className="w-12 h-12 text-center text-white text-lg font-mono bg-transparent border border-gray-500 rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 transition-colors"
+                      className="size-10 lg:size-12 text-center text-white text-lg font-mono bg-transparent border border-gray-500 rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 transition-colors"
                       disabled={isLoading}
                     />
                   ))}

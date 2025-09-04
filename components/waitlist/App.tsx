@@ -5,6 +5,7 @@ import {
   GoogleIcon,
   InstagramIcon,
   TelegramIcon,
+  TiktokIcon,
   XIcon,
 } from "@/components/common/icons";
 import { Pencil, Sparkles, Trophy, TrendingUp, Calendar } from "lucide-react";
@@ -79,8 +80,19 @@ const App = () => {
               </Link>
             </Button>
             <Button variant="purple" size={"icon"} asChild>
-              <Link href={"https://www.instagram.com/powerblocks.io/"} target="_blank">
+              <Link
+                href={"https://www.instagram.com/powerblocks.io/"}
+                target="_blank"
+              >
                 <InstagramIcon className="w-6 h-6" />
+              </Link>
+            </Button>
+            <Button variant="purple" size={"icon"} asChild>
+              <Link
+                href={"https://www.tiktok.com/@powerblocks.io"}
+                target="_blank"
+              >
+                <TiktokIcon className="w-6 h-6" />
               </Link>
             </Button>
             <Button variant="purple" size={"icon"} asChild>
@@ -88,6 +100,7 @@ const App = () => {
                 <TelegramIcon className="w-6 h-6" />
               </Link>
             </Button>
+
             <Button variant="purple" size={"icon"} asChild>
               <Link href={"http://discord.gg/EeeWBTV87z"} target="_blank">
                 <DiscordIcon className="w-6 h-6" />

@@ -11,19 +11,19 @@ import { Input } from "@/components/ui/input";
 
 import { tasksApi } from "@/lib/api/tasks";
 
-interface PhoneVerificationModalProps {
+interface EmailVerificationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }
 
-export function PhoneVerificationModal({
+export function EmailVerificationModal({
   open,
   onOpenChange,
   onSuccess,
-}: PhoneVerificationModalProps) {
-  const [step, setStep] = useState<"phone" | "otp">("phone");
-  const [phoneNumber, setPhoneNumber] = useState("");
+}: EmailVerificationModalProps) {
+  const [step, setStep] = useState<"email" | "otp">("email");
+  const [email, setEmail] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -55,32 +55,31 @@ export function PhoneVerificationModal({
   // Reset state when modal opens
   useEffect(() => {
     if (open) {
-      setStep("phone");
-      setPhoneNumber("");
+      setStep("email");
+      setEmail("");
       setOtp(["", "", "", "", "", ""]);
       setTimeLeft(300);
     }
   }, [open]);
 
   const sendOtpMutation = useMutation({
-    mutationFn: tasksApi.sendPhoneOtp,
+    mutationFn: tasksApi.sendEmailOtp,
     onSuccess: () => {
       setStep("otp");
       setTimeLeft(300);
-      toast.success("OTP sent to your phone number!");
+      toast.success("OTP sent to your email address!");
     },
     onError: (error: any) => {
-      // Toast is already handled by axios interceptor
-      console.error("Failed to send OTP:", error);
+      toast.error(error?.response?.data?.message || "Failed to send OTP");
     },
   });
 
   const verifyOtpMutation = useMutation({
-    mutationFn: ({ phoneNumber, otp }: { phoneNumber: string; otp: string }) =>
-      tasksApi.verifyPhoneOtp(phoneNumber, otp),
+    mutationFn: ({ email, otp }: { email: string; otp: string }) =>
+      tasksApi.verifyEmailOtp(email, otp),
     onSuccess: async (data) => {
       if (data.success) {
-        toast.success("Phone verified successfully!");
+        toast.success("Email verified successfully!");
         onSuccess?.();
         onOpenChange(false);
       } else {
@@ -92,8 +91,7 @@ export function PhoneVerificationModal({
       }
     },
     onError: (error: any) => {
-      // Toast is already handled by axios interceptor
-      console.error("Failed to verify OTP:", error);
+      toast.error(error?.response?.data?.message || "Failed to verify OTP");
       setOtp(["", "", "", "", "", ""]);
       if (inputRefs.current[0]) {
         inputRefs.current[0].focus();
@@ -101,35 +99,20 @@ export function PhoneVerificationModal({
     },
   });
 
-  const formatPhoneNumber = (value: string) => {
-    // Remove all non-digit characters except +
-    const cleaned = value.replace(/[^\d+]/g, "");
-
-    // Ensure it starts with + if it has digits
-    if (cleaned.length > 0 && !cleaned.startsWith("+")) {
-      return "+" + cleaned;
-    }
-
-    return cleaned;
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
-  const validatePhoneNumber = (phone: string) => {
-    // Basic validation: should start with + and have 10-15 digits
-    const phoneRegex = /^\+\d{10,15}$/;
-    return phoneRegex.test(phone);
-  };
-
-  const handlePhoneSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validatePhoneNumber(phoneNumber)) {
-      toast.error(
-        "Please enter a valid phone number with country code (e.g., +1234567890)"
-      );
+    if (!validateEmail(email)) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
-    sendOtpMutation.mutate(phoneNumber);
+    sendOtpMutation.mutate(email);
   };
 
   const handleOtpInputChange = (index: number, value: string) => {
@@ -216,7 +199,7 @@ export function PhoneVerificationModal({
 
   const handleOtpSubmit = (otpString: string) => {
     verifyOtpMutation.mutate({
-      phoneNumber,
+      email,
       otp: otpString,
     });
   };
@@ -224,7 +207,7 @@ export function PhoneVerificationModal({
   const handleResendOtp = () => {
     setTimeLeft(300);
     setOtp(["", "", "", "", "", ""]);
-    sendOtpMutation.mutate(phoneNumber);
+    sendOtpMutation.mutate(email);
   };
 
   const formatTime = (seconds: number) => {
@@ -244,13 +227,13 @@ export function PhoneVerificationModal({
 
           <div className="flex flex-col items-center justify-center h-full relative z-10">
             <DialogTitle className="sr-only">
-              {step === "phone"
-                ? "Phone Verification"
-                : "Phone OTP Verification"}
+              {step === "email"
+                ? "Email Verification"
+                : "Email OTP Verification"}
             </DialogTitle>
 
             <div className="p-4 lg:p-8 w-full">
-              {step === "phone" ? (
+              {step === "email" ? (
                 <div className="text-center space-y-6">
                   {/* Header */}
                   <div className="space-y-2">
@@ -258,42 +241,40 @@ export function PhoneVerificationModal({
                       <X className="w-6 h-6 text-white" />
                     </div>
                     <h2 className="text-2xl font-bold text-white">
-                      Verify Phone Number
+                      Verify Email Address
                     </h2>
                     <p className="text-[#A5A9C1] text-sm">
-                      We'll send a verification code to your phone
+                      We'll send a verification code to your email
                     </p>
                   </div>
 
-                  <form onSubmit={handlePhoneSubmit} className="space-y-6">
+                  <form onSubmit={handleEmailSubmit} className="space-y-6">
                     <div className="text-left">
                       <label
-                        htmlFor="phone"
+                        htmlFor="email"
                         className="block text-sm font-medium text-gray-300 mb-2"
                       >
-                        Phone Number
+                        Email Address
                       </label>
                       <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+1234567890"
-                        value={phoneNumber}
-                        onChange={(e) =>
-                          setPhoneNumber(formatPhoneNumber(e.target.value))
-                        }
+                        id="email"
+                        type="email"
+                        placeholder="your.email@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className="w-full bg-white/5 border border-white/20 rounded-2xl px-4 py-3 text-white placeholder-gray-400 focus:border-[#EE4FFB] focus:outline-none focus:ring-2 focus:ring-[#EE4FFB]/20 transition-all duration-300"
                         disabled={isLoading}
                         required
                       />
                       <p className="text-xs text-gray-400 mt-2">
-                        Enter your phone number with country code (e.g., +1 for
-                        US)
+                        Enter your email address to receive the verification
+                        code
                       </p>
                     </div>
 
                     <Button
                       type="submit"
-                      disabled={isLoading || !phoneNumber.trim()}
+                      disabled={isLoading || !email.trim()}
                       className="w-full bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] hover:from-[#FF6B9D] hover:to-[#EE4FFB] text-white py-3 rounded-2xl font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#EE4FFB]/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     >
                       {isLoading ? (
@@ -318,7 +299,7 @@ export function PhoneVerificationModal({
                       Enter Verification Code
                     </h2>
                     <p className="text-[#A5A9C1] text-sm">
-                      Check your phone for the verification code
+                      Check your email for the verification code
                     </p>
                   </div>
 
@@ -355,18 +336,16 @@ export function PhoneVerificationModal({
                     <p className="text-gray-400 text-sm">
                       Verification code sent to
                     </p>
-                    <p className="text-white text-sm font-medium">
-                      {phoneNumber}
-                    </p>
+                    <p className="text-white text-sm font-medium">{email}</p>
                   </div>
 
                   <div className="flex flex-col gap-3">
                     <button
                       type="button"
-                      onClick={() => setStep("phone")}
+                      onClick={() => setStep("email")}
                       className="text-gray-400 hover:text-white text-sm transition-colors duration-300"
                     >
-                      Change phone number
+                      Change email address
                     </button>
 
                     <button

@@ -143,36 +143,39 @@ export function AvatarModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        showCloseButton={false}
-        style={{
-          background: "linear-gradient(to bottom, #11042F, #04010E)",
-        }}
-      >
+      <DialogContent className="bg-gradient-to-br from-[#11042F]/95 to-[#020106]/95 backdrop-blur-xl border border-[#2a2a4e]/50 rounded-3xl shadow-2xl shadow-[#EE4FFB]/10 p-0 overflow-hidden">
         <div className="relative">
-        
-          <div className="flex flex-col items-center justify-center h-full">
+          {/* Background Effects */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/5 to-[#28A9A3]/5 opacity-50"></div>
+
+          <div className="flex flex-col items-center justify-center h-full relative z-10">
             <DialogTitle className="sr-only">
               Upload Profile Picture
             </DialogTitle>
 
-            <div className="lg:p-8 w-full">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  Upload Profile Picture
-                </h2>
-                <p className="text-gray-400 text-sm mb-8">
-                  Choose a profile picture for your account
-                </p>
+            <div className="p-4 lg:p-8 w-full">
+              <div className="text-center space-y-6">
+                {/* Header */}
+                <div className="space-y-2">
+                  <div className="p-3 bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] rounded-2xl w-fit mx-auto">
+                    <Upload className="w-6 h-6 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">
+                    Upload Profile Picture
+                  </h2>
+                  <p className="text-[#A5A9C1] text-sm">
+                    Choose a profile picture for your account
+                  </p>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="text-left">
                     {!selectedFile ? (
                       <div
-                        className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                        className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ${
                           dragActive
-                            ? "border-purple-400 bg-purple-400/10"
-                            : "border-gray-500 hover:border-gray-400"
+                            ? "border-[#EE4FFB] bg-[#EE4FFB]/10"
+                            : "border-white/20 hover:border-[#EE4FFB]/50 bg-white/5"
                         }`}
                         onDragEnter={handleDrag}
                         onDragLeave={handleDrag}
@@ -188,11 +191,11 @@ export function AvatarModal({
                           disabled={isLoading}
                         />
 
-                        <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                        <Upload className="mx-auto h-12 w-12 text-[#A5A9C1] mb-4" />
                         <p className="text-white text-lg font-medium mb-2">
                           Drop your image here
                         </p>
-                        <p className="text-gray-400 text-sm mb-4">
+                        <p className="text-[#A5A9C1] text-sm mb-4">
                           or click to browse files
                         </p>
 
@@ -201,7 +204,7 @@ export function AvatarModal({
                           variant="outline"
                           onClick={() => fileInputRef.current?.click()}
                           disabled={isLoading}
-                          className="bg-transparent border-gray-500 text-white hover:bg-gray-800 hover:border-gray-400"
+                          className="bg-white/5 border-white/20 text-white hover:bg-white/10 hover:border-[#EE4FFB]/50 transition-all duration-300"
                         >
                           Choose File
                         </Button>
@@ -212,27 +215,27 @@ export function AvatarModal({
                           <img
                             src={previewUrl!}
                             alt="Preview"
-                            className="size-48 object-cover rounded-lg border border-gray-500 "
+                            className="size-48 object-cover rounded-2xl border border-white/20 shadow-lg"
                           />
                           <button
                             type="button"
                             onClick={handleRemoveFile}
                             disabled={isLoading}
-                            className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+                            className="absolute top-2 right-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-full p-1 transition-all duration-300 transform hover:scale-110"
                           >
                             <X className="h-4 w-4" />
                           </button>
                         </div>
-                        <div className="text-left">
-                          <p className="text-sm text-gray-300">
+                        <div className="text-left bg-white/5 rounded-2xl p-4 border border-white/20">
+                          <p className="text-sm text-white">
                             <span className="font-medium">File:</span>{" "}
                             {selectedFile.name}
                           </p>
-                          <p className="text-sm text-gray-400">
+                          <p className="text-sm text-[#A5A9C1]">
                             <span className="font-medium">Size:</span>{" "}
                             {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                           </p>
-                          <p className="text-sm text-gray-400">
+                          <p className="text-sm text-[#A5A9C1]">
                             <span className="font-medium">Type:</span>{" "}
                             {selectedFile.type}
                           </p>
@@ -244,9 +247,16 @@ export function AvatarModal({
                   <Button
                     type="submit"
                     disabled={isLoading || !selectedFile}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] hover:from-[#FF6B9D] hover:to-[#EE4FFB] text-white py-3 rounded-2xl font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#EE4FFB]/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
-                    {isLoading ? "Uploading..." : "Upload Profile Picture"}
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        Uploading...
+                      </div>
+                    ) : (
+                      "Upload Profile Picture"
+                    )}
                   </Button>
                 </form>
               </div>

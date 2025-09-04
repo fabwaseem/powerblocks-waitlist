@@ -2,6 +2,7 @@ import { AgeDobModal } from "@/components/home/age-dob-modal";
 import { AvatarModal } from "@/components/home/avatar-modal";
 import { CityModal } from "@/components/home/city-modal";
 import { CountryModal } from "@/components/home/country-modal";
+import { EmailVerificationModal } from "@/components/home/email-verification-modal";
 import { GenderModal } from "@/components/home/gender-modal";
 import { PhoneVerificationModal } from "@/components/home/phone-verification-modal";
 import { TwitterTaskModal } from "@/components/home/twitter-task-modal";
@@ -28,6 +29,7 @@ import { cn } from "@/lib/utils";
 
 const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
   const [phoneModalOpen, setPhoneModalOpen] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [usernameModalOpen, setUsernameModalOpen] = useState(false);
   const [genderModalOpen, setGenderModalOpen] = useState(false);
   const [ageDobModalOpen, setAgeDobModalOpen] = useState(false);
@@ -161,6 +163,11 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
 
   const handleTaskClick = async (task?: Task) => {
     if (!task || task.isCompleted || task.isLocked || !task.isNextTask) {
+      return;
+    }
+
+    if (task.taskType === TaskType.VERIFY_EMAIL) {
+      setEmailModalOpen(true);
       return;
     }
 
@@ -313,6 +320,11 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
       <PhoneVerificationModal
         open={phoneModalOpen}
         onOpenChange={setPhoneModalOpen}
+        onSuccess={handleTaskSuccess}
+      />
+      <EmailVerificationModal
+        open={emailModalOpen}
+        onOpenChange={setEmailModalOpen}
         onSuccess={handleTaskSuccess}
       />
       <UsernameModal

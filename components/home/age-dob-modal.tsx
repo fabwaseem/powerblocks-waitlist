@@ -89,23 +89,28 @@ export function AgeDobModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        style={{
-          background: "linear-gradient(to bottom, #11042F, #04010E)",
-        }}
-      >
+      <DialogContent className="bg-gradient-to-br from-[#11042F]/95 to-[#020106]/95 backdrop-blur-xl border border-[#2a2a4e]/50 rounded-3xl shadow-2xl shadow-[#EE4FFB]/10 p-0 overflow-hidden">
         <div className="relative">
-          <div className="flex flex-col items-center justify-center h-full">
+          {/* Background Effects */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/5 to-[#28A9A3]/5 opacity-50"></div>
+
+          <div className="flex flex-col items-center justify-center h-full relative z-10">
             <DialogTitle className="sr-only">Select Date of Birth</DialogTitle>
 
-            <div className="lg:p-8 w-full">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  Date of Birth
-                </h2>
-                <p className="text-gray-400 text-sm mb-8">
-                  Please select your date of birth
-                </p>
+            <div className="p-4 lg:p-8 w-full">
+              <div className="text-center space-y-6">
+                {/* Header */}
+                <div className="space-y-2">
+                  <div className="p-3 bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] rounded-2xl w-fit mx-auto">
+                    <X className="w-6 h-6 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">
+                    Date of Birth
+                  </h2>
+                  <p className="text-[#A5A9C1] text-sm">
+                    Please select your date of birth
+                  </p>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="text-left">
@@ -123,11 +128,12 @@ export function AgeDobModal({
                           setDateOfBirth(new Date(e.target.value))
                         }
                         disabled={isLoading}
+                        className="w-full bg-white/5 border border-white/20 rounded-2xl px-4 py-3 text-white placeholder-gray-400 focus:border-[#EE4FFB] focus:outline-none focus:ring-2 focus:ring-[#EE4FFB]/20 transition-all duration-300"
                       />
                     </div>
 
                     {dateOfBirth && (
-                      <p className="text-xs text-purple-400 mt-1">
+                      <p className="text-xs text-[#EE4FFB] mt-2 font-medium">
                         Age: {calculateAge(dateOfBirth)} years
                       </p>
                     )}
@@ -136,9 +142,16 @@ export function AgeDobModal({
                   <Button
                     type="submit"
                     disabled={isLoading || !dateOfBirth}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] hover:from-[#FF6B9D] hover:to-[#EE4FFB] text-white py-3 rounded-2xl font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#EE4FFB]/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
-                    {isLoading ? "Updating..." : "Update Date of Birth"}
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        Updating...
+                      </div>
+                    ) : (
+                      "Update Date of Birth"
+                    )}
                   </Button>
                 </form>
               </div>

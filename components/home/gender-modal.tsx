@@ -74,24 +74,28 @@ export function GenderModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        style={{
-          background: "linear-gradient(to bottom, #11042F, #04010E)",
-        }}
-      >
+      <DialogContent className="bg-gradient-to-br from-[#11042F]/95 to-[#020106]/95 backdrop-blur-xl border border-[#2a2a4e]/50 rounded-3xl shadow-2xl shadow-[#EE4FFB]/10 p-0 overflow-hidden">
         <div className="relative">
+          {/* Background Effects */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/5 to-[#28A9A3]/5 opacity-50"></div>
 
-          <div className="flex flex-col items-center justify-center h-full">
+          <div className="flex flex-col items-center justify-center h-full relative z-10">
             <DialogTitle className="sr-only">Select Gender</DialogTitle>
 
-            <div className="lg:p-8 w-full">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  Select Gender
-                </h2>
-                <p className="text-gray-400 text-sm mb-8">
-                  Please select your gender
-                </p>
+            <div className="p-4 lg:p-8 w-full">
+              <div className="text-center space-y-6">
+                {/* Header */}
+                <div className="space-y-2">
+                  <div className="p-3 bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] rounded-2xl w-fit mx-auto">
+                    <X className="w-6 h-6 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">
+                    Select Gender
+                  </h2>
+                  <p className="text-[#A5A9C1] text-sm">
+                    Please select your gender
+                  </p>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="text-left">
@@ -108,15 +112,15 @@ export function GenderModal({
                       }
                       disabled={isLoading}
                     >
-                      <SelectTrigger className="w-full bg-transparent border border-gray-500 rounded-lg px-4 py-3 text-white focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20">
+                      <SelectTrigger className="w-full bg-white/5 border border-white/20 rounded-2xl px-4 py-3 text-white focus:border-[#EE4FFB] focus:outline-none focus:ring-2 focus:ring-[#EE4FFB]/20 transition-all duration-300">
                         <SelectValue placeholder="Select your gender" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-900 border-gray-700">
+                      <SelectContent className="bg-[#11042F]/95 backdrop-blur-xl border border-[#2a2a4e]/50 rounded-2xl">
                         {genderOptions.map((option) => (
                           <SelectItem
                             key={option.value}
                             value={option.value}
-                            className="text-white hover:bg-gray-800 focus:bg-gray-800"
+                            className="text-white hover:bg-white/10 focus:bg-white/10 transition-colors duration-300"
                           >
                             {option.label}
                           </SelectItem>
@@ -128,9 +132,16 @@ export function GenderModal({
                   <Button
                     type="submit"
                     disabled={isLoading || !selectedGender}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] hover:from-[#FF6B9D] hover:to-[#EE4FFB] text-white py-3 rounded-2xl font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#EE4FFB]/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
-                    {isLoading ? "Updating..." : "Update Gender"}
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        Updating...
+                      </div>
+                    ) : (
+                      "Update Gender"
+                    )}
                   </Button>
                 </form>
               </div>

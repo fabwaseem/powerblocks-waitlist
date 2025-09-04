@@ -196,20 +196,28 @@ export function VerificationModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        style={{
-          background: "linear-gradient(to bottom, #11042F, #04010E)",
-        }}
-      >
+      <DialogContent className="bg-gradient-to-br from-[#11042F]/95 to-[#020106]/95 backdrop-blur-xl border border-[#2a2a4e]/50 rounded-3xl shadow-2xl shadow-[#EE4FFB]/10 p-0 overflow-hidden">
         <div className="relative">
-          <div className="flex flex-col items-center justify-center h-full">
+          {/* Background Effects */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/5 to-[#28A9A3]/5 opacity-50"></div>
+
+          <div className="flex flex-col items-center justify-center h-full relative z-10">
             <DialogTitle className="sr-only">One-Time Password</DialogTitle>
 
-            <div className="lg:p-8 w-full">
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-6">
-                  One-Time Password
-                </h2>
+            <div className="p-4 lg:p-8 w-full">
+              <div className="text-center space-y-6">
+                {/* Header */}
+                <div className="space-y-2">
+                  <div className="p-3 bg-gradient-to-r from-[#28A9A3] to-[#00D4FF] rounded-2xl w-fit mx-auto">
+                    <X className="w-6 h-6 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">
+                    One-Time Password
+                  </h2>
+                  <p className="text-[#A5A9C1] text-sm">
+                    Enter the verification code sent to your email
+                  </p>
+                </div>
 
                 {/* OTP Input Boxes */}
                 <div className="flex justify-center gap-3 mb-6">
@@ -234,22 +242,24 @@ export function VerificationModal({
                       }
                       onKeyDown={(e) => handleKeyDown(index, e)}
                       onPaste={(e) => handlePaste(index, e)}
-                      className="size-10 lg:size-12 text-center text-white text-lg font-mono bg-transparent border border-gray-500 rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 transition-colors"
+                      className="size-10 lg:size-12 text-center text-white text-lg font-mono bg-white/5 border border-white/20 rounded-2xl focus:border-[#EE4FFB] focus:outline-none focus:ring-2 focus:ring-[#EE4FFB]/20 transition-all duration-300 hover:border-[#EE4FFB]/50"
                       disabled={isLoading}
                     />
                   ))}
                 </div>
 
-                <p className="text-gray-400 text-sm mb-2">
-                  Enter the verification code sent as a message to
-                </p>
-                <p className="text-white text-sm mb-6">{email}</p>
+                <div className="space-y-2">
+                  <p className="text-[#A5A9C1] text-sm">
+                    Verification code sent to
+                  </p>
+                  <p className="text-white text-sm font-medium">{email}</p>
+                </div>
 
                 <button
                   type="button"
                   onClick={handleResendCode}
                   disabled={timeLeft > 0 || isLoading}
-                  className="text-purple-400 hover:text-purple-300 text-sm disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
+                  className="text-[#EE4FFB] hover:text-[#FF6B9D] text-sm disabled:text-gray-600 disabled:cursor-not-allowed transition-colors duration-300"
                 >
                   {timeLeft > 0
                     ? `Resend a code (${formatTime(timeLeft)})`

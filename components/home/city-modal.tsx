@@ -91,24 +91,26 @@ export function CityModal({ open, onOpenChange, onSuccess }: CityModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        style={{
-          background: "linear-gradient(to bottom, #11042F, #04010E)",
-        }}
-      >
+      <DialogContent className="bg-gradient-to-br from-[#11042F]/95 to-[#020106]/95 backdrop-blur-xl border border-[#2a2a4e]/50 rounded-3xl shadow-2xl shadow-[#EE4FFB]/10 p-0 overflow-hidden">
         <div className="relative">
-         
-          <div className="flex flex-col items-center justify-center h-full">
+          {/* Background Effects */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/5 to-[#28A9A3]/5 opacity-50"></div>
+
+          <div className="flex flex-col items-center justify-center h-full relative z-10">
             <DialogTitle className="sr-only">Enter City</DialogTitle>
 
-            <div className="lg:p-8 w-full">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  Enter City
-                </h2>
-                <p className="text-gray-400 text-sm mb-8">
-                  Please enter your city or province
-                </p>
+            <div className="p-4 lg:p-8 w-full">
+              <div className="text-center space-y-6">
+                {/* Header */}
+                <div className="space-y-2">
+                  <div className="p-3 bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] rounded-2xl w-fit mx-auto">
+                    <X className="w-6 h-6 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">Enter City</h2>
+                  <p className="text-[#A5A9C1] text-sm">
+                    Please enter your city or province
+                  </p>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="text-left">
@@ -124,14 +126,14 @@ export function CityModal({ open, onOpenChange, onSuccess }: CityModalProps) {
                       placeholder="Enter your city or province"
                       value={city}
                       onChange={(e) => handleCityChange(e.target.value)}
-                      className="w-full bg-transparent border border-gray-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20"
+                      className="w-full bg-white/5 border border-white/20 rounded-2xl px-4 py-3 text-white placeholder-gray-400 focus:border-[#EE4FFB] focus:outline-none focus:ring-2 focus:ring-[#EE4FFB]/20 transition-all duration-300"
                       disabled={isLoading}
                       required
                       minLength={2}
                       maxLength={50}
                     />
                     <div className="mt-2 space-y-1">
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-[#A5A9C1]">
                         Enter the name of your city, town, or province
                       </p>
                       {validationError && (
@@ -145,17 +147,24 @@ export function CityModal({ open, onOpenChange, onSuccess }: CityModalProps) {
                   <Button
                     type="submit"
                     disabled={isLoading || !city.trim() || !!validationError}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] hover:from-[#FF6B9D] hover:to-[#EE4FFB] text-white py-3 rounded-2xl font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#EE4FFB]/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
-                    {isLoading ? "Updating..." : "Update City"}
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        Updating...
+                      </div>
+                    ) : (
+                      "Update City"
+                    )}
                   </Button>
                 </form>
 
-                <div className="mt-6 p-4 bg-gray-800/30 rounded-lg border border-gray-700">
+                <div className="mt-6 p-4 bg-white/5 rounded-2xl border border-white/20">
                   <h3 className="text-sm font-medium text-white mb-2">
                     Location Guidelines:
                   </h3>
-                  <ul className="text-xs text-gray-400 space-y-1 text-left">
+                  <ul className="text-xs text-[#A5A9C1] space-y-1 text-left">
                     <li>• Enter your current city or province</li>
                     <li>• Use the common name for your location</li>
                     <li>

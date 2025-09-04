@@ -114,6 +114,30 @@ export const tasksApi = {
     return response.data;
   },
 
+  sendEmailOtp: async (email: string): Promise<{ message: string }> => {
+    const response = await api.post<{ message: string }>(
+      `/tasks/email/send-otp`,
+      {
+        email,
+      }
+    );
+    return response.data;
+  },
+
+  verifyEmailOtp: async (
+    email: string,
+    otp: string
+  ): Promise<{ message: string; success: boolean }> => {
+    const response = await api.post<{ message: string; success: boolean }>(
+      `/tasks/email/verify-otp`,
+      {
+        email,
+        otp,
+      }
+    );
+    return response.data;
+  },
+
   updateUser: async (userData: {
     username?: string;
     gender?: Gender;

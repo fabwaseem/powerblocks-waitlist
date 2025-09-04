@@ -95,9 +95,7 @@ const TasksSection = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left side - Progress and Timer Skeleton */}
           <div className="flex-1 space-y-8">
-            {/* Progress section skeleton */}
             <div>
               <Skeleton className="h-6 w-32 mb-6 bg-gray-700/50" />
 

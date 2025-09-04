@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 
 import { tasksApi } from "@/lib/api/tasks";
 import { usersApi } from "@/lib/api/users";
+import { useAuth } from "@/hooks/use-auth";
 
 interface UsernameModalProps {
   open: boolean;
@@ -28,7 +29,7 @@ export function UsernameModal({
   username,
 }: UsernameModalProps) {
   const [newUsername, setNewUsername] = useState(username || "");
-
+  const { refetch: refetchUser } = useAuth();
   // Reset state when modal opens
   useEffect(() => {
     if (open) {
@@ -48,21 +49,18 @@ export function UsernameModal({
             ? "Username created successfully!"
             : "Username updated successfully!"
         );
-        onSuccess?.();
+        if (type === "task") {
+          onSuccess?.();
+        }
         onOpenChange(false);
+        refetchUser();
       } else {
-        toast.error(
-          type === "task"
-            ? "Failed to create username"
-            : "Failed to update username"
-        );
+        toast.error(data.message || "Failed to update username");
       }
     },
     onError: (error: any) => {
       toast.error(
-        type === "task"
-          ? "Failed to create username"
-          : "Failed to update username"
+        error?.response?.data?.message || "Failed to update username"
       );
     },
   });

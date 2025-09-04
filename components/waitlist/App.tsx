@@ -3,6 +3,7 @@
 import {
   DiscordIcon,
   GoogleIcon,
+  InstagramIcon,
   TelegramIcon,
   XIcon,
 } from "@/components/common/icons";
@@ -16,6 +17,7 @@ import { Button } from "../ui/button";
 import ReferralsCard from "./ReferralsCard";
 import TasksSection from "./TasksSection";
 import { useAuth } from "@/hooks/use-auth";
+import Link from "next/link";
 
 const App = () => {
   const { user } = useAuth();
@@ -71,17 +73,25 @@ const App = () => {
 
           {/* Social Media Icons */}
           <div className="flex gap-3">
-            <Button variant="purple" size={"icon"}>
-              <GoogleIcon className="w-6 h-6" />
+            <Button variant="purple" size={"icon"} asChild>
+              <Link href={"https://x.com/Powerblocks_io"} target="_blank">
+                <XIcon className="w-6 h-6" />
+              </Link>
             </Button>
-            <Button variant="purple" size={"icon"}>
-              <XIcon className="w-6 h-6" />
+            <Button variant="purple" size={"icon"} asChild>
+              <Link href={"https://www.instagram.com/powerblocks.io/"} target="_blank">
+                <InstagramIcon className="w-6 h-6" />
+              </Link>
             </Button>
-            <Button variant="purple" size={"icon"}>
-              <TelegramIcon className="w-6 h-6" />
+            <Button variant="purple" size={"icon"} asChild>
+              <Link href={"https://t.me/+slrQQH3pW7A0Njk0"} target="_blank">
+                <TelegramIcon className="w-6 h-6" />
+              </Link>
             </Button>
-            <Button variant="purple" size={"icon"}>
-              <DiscordIcon className="w-6 h-6" />
+            <Button variant="purple" size={"icon"} asChild>
+              <Link href={"http://discord.gg/EeeWBTV87z"} target="_blank">
+                <DiscordIcon className="w-6 h-6" />
+              </Link>
             </Button>
           </div>
         </div>

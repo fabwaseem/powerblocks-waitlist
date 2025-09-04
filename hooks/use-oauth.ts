@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useAuthToken } from "./useAuthToken";
 
 export const useOAuth = (baseUrl?: string) => {
   const [loading, setLoading] = useState(false);
@@ -8,14 +9,18 @@ export const useOAuth = (baseUrl?: string) => {
     baseUrl || process.env.NEXT_PUBLIC_API_URL || "http://localhost:3300";
 
   const openOAuthPopup = useCallback(
-    (provider: string, isConnect = false) => {
+    (provider: string, isConnect = false, referralCode?: string) => {
       return new Promise<any>((resolve, reject) => {
         setLoading(true);
         setError(null);
 
-        const popupUrl = `${apiUrl}/auth/oauth/${provider}?state=${
-          isConnect ? "connect" : "login"
-        }`;
+        // Build URL with referral code if provided
+        const params = new URLSearchParams({
+          state: isConnect ? "connect" : "login",
+          ...(referralCode && { referralCode }),
+        });
+
+        const popupUrl = `${apiUrl}/auth/oauth/${provider}?${params.toString()}`;
         const popup = window.open(
           popupUrl,
           "oauth_popup",
@@ -32,13 +37,21 @@ export const useOAuth = (baseUrl?: string) => {
         }
 
         const messageHandler = (event: MessageEvent) => {
-          console.log(event);
+          console.log("OAuth message received:", event);
           if (event.origin !== apiUrl.replace("/api", "")) return;
 
           if (event.data.type === "OAUTH_SUCCESS") {
             window.removeEventListener("message", messageHandler);
             popup.close();
             setLoading(false);
+
+            // Handle login success - store token and reload
+            if (!isConnect && event.data.data?.accessToken) {
+              localStorage.setItem("accessToken", event.data.data.accessToken);
+              // Reload the page to update auth state
+              window.location.reload();
+            }
+
             resolve(event.data.data);
           } else if (event.data.type === "OAUTH_ERROR") {
             window.removeEventListener("message", messageHandler);
@@ -66,9 +79,9 @@ export const useOAuth = (baseUrl?: string) => {
   );
 
   const loginWithOAuth = useCallback(
-    async (provider: string) => {
+    async (provider: string, referralCode?: string) => {
       try {
-        return await openOAuthPopup(provider, false);
+        return await openOAuthPopup(provider, false, referralCode);
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "OAuth login failed";

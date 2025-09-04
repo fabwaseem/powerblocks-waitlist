@@ -24,7 +24,7 @@ export default function Navbar() {
               height={42}
               className="size-10"
             />
-            <h1 className="text-white text-2xl font-aeon ik-bold">
+            <h1 className="text-white text-2xl font-aeon font-bold">
               Powerblocks
             </h1>
           </Link>

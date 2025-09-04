@@ -19,6 +19,12 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
   const [phoneModalOpen, setPhoneModalOpen] = useState(false);
@@ -92,42 +98,64 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
     }
 
     gridItems.push(
-      <div
-        key={i}
-        className={`w-12 h-12 rounded-2xl ${bgColor} border-2 ${borderColor} flex items-center justify-center transition-all duration-300 ${glowEffect} ${hoverEffect} relative overflow-hidden group ${
-          isClickable ? "cursor-pointer" : ""
-        }`}
-        onClick={() => isClickable && !completingTask && handleTaskClick(task)}
-      >
-        {/* Background glow effect for active tasks */}
-        {isClickable && (
-          <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/10 to-[#FF6B9D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-        )}
+      <Tooltip key={i}>
+        <TooltipTrigger asChild>
+          <div
+            className={`w-12 h-12 rounded-2xl ${bgColor} border-2 ${borderColor} flex items-center justify-center transition-all duration-300 ${glowEffect} ${hoverEffect} relative overflow-hidden group ${
+              isClickable ? "cursor-pointer" : ""
+            }`}
+            onClick={() =>
+              isClickable && !completingTask && handleTaskClick(task)
+            }
+          >
+            {/* Background glow effect for active tasks */}
+            {isClickable && (
+              <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/10 to-[#FF6B9D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            )}
 
-        {/* Icon with enhanced styling */}
-        <div className="relative z-10">
-          {completingTask && isClickable ? (
-            <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#EE4FFB] border-t-transparent"></div>
-          ) : icon === "check" ? (
-            <div className="relative">
-              <CheckIcon className="w-6 h-6 text-green-400 drop-shadow-lg" />
-              <div className="absolute inset-0 bg-green-400/20 rounded-full blur-sm animate-pulse"></div>
+            {/* Icon with enhanced styling */}
+            <div className="relative z-10">
+              {completingTask && isClickable ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#EE4FFB] border-t-transparent"></div>
+              ) : icon === "check" ? (
+                <div className="relative">
+                  <CheckIcon className="w-6 h-6 text-green-400 drop-shadow-lg" />
+                  <div className="absolute inset-0 bg-green-400/20 rounded-full blur-sm animate-pulse"></div>
+                </div>
+              ) : icon === "flame" ? (
+                <div className="relative">
+                  <FlameIcon className="w-6 h-6 text-[#EE4FFB] drop-shadow-lg" />
+                  <div className="absolute inset-0 bg-[#EE4FFB]/20 rounded-full blur-sm animate-pulse"></div>
+                </div>
+              ) : (
+                <LockIcon className="w-6 h-6 text-gray-500" />
+              )}
             </div>
-          ) : icon === "flame" ? (
-            <div className="relative">
-              <FlameIcon className="w-6 h-6 text-[#EE4FFB] drop-shadow-lg" />
-              <div className="absolute inset-0 bg-[#EE4FFB]/20 rounded-full blur-sm animate-pulse"></div>
-            </div>
-          ) : (
-            <LockIcon className="w-6 h-6 text-gray-500" />
+
+            {/* Hover effect overlay */}
+            {isClickable && (
+              <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/5 to-[#FF6B9D]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            )}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="bg-gray-900 text-white border border-gray-700 shadow-lg"
+        >
+          <p className="font-medium">{task ? task.name : "Locked Task"}</p>
+          {task && (
+            <p
+              className={cn(
+                "text-xs text-[#EE4FFB] mt-1",
+                task.isCompleted && "text-green-400",
+                task.isLocked && "text-gray-500"
+              )}
+            >
+              +{task.xpReward} XP
+            </p>
           )}
-        </div>
-
-        {/* Hover effect overlay */}
-        {isClickable && (
-          <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/5 to-[#FF6B9D]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-        )}
-      </div>
+        </TooltipContent>
+      </Tooltip>
     );
   }
 
@@ -254,7 +282,6 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
     <>
       {/* Enhanced Grid Container */}
       <div className="relative">
-
         {/* Enhanced Grid */}
         <div className="flex flex-wrap justify-center gap-4 max-w-2xl mx-auto lg:mx-0">
           {gridItems}

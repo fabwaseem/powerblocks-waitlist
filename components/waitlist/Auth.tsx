@@ -18,12 +18,18 @@ import toast from "react-hot-toast";
 import Navbar from "../home/navbar";
 import Link from "next/link";
 import Image from "next/image";
+import { useOAuth } from "@/hooks/use-oauth";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [isOTPModalOpen, setIsOTPModalOpen] = useState(false);
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const searchParams = useSearchParams();
+  const {
+    loginWithOAuth,
+    loading: oauthLoading,
+    error: oauthError,
+  } = useOAuth();
 
   // Get referral code from URL params
   useEffect(() => {
@@ -91,6 +97,16 @@ const Auth = () => {
     };
 
     sendCodeMutation.mutate(sendCodeData as any);
+  };
+
+  const handleOAuthLogin = async (provider: string) => {
+    try {
+      await loginWithOAuth(provider, referralCode || undefined);
+      toast.success(`Successfully logged in with ${provider}!`);
+    } catch (error) {
+      console.error(`${provider} login failed:`, error);
+      toast.error(`Failed to login with ${provider}. Please try again.`);
+    }
   };
 
   const isLoading = sendCodeMutation.isPending;
@@ -175,18 +191,22 @@ const Auth = () => {
             </div>
           </div>
 
-          <div className="flex gap-2  ">
-            <Button variant="purple" size={"icon"}>
+          <div className="flex gap-2  justify-center">
+            <Button
+              variant="purple"
+              size={"icon"}
+              onClick={() => handleOAuthLogin("google")}
+              disabled={oauthLoading}
+            >
               <GoogleIcon className="w-6 h-6" />
             </Button>
-            <Button variant="purple" size={"icon"}>
+            <Button
+              variant="purple"
+              size={"icon"}
+              onClick={() => handleOAuthLogin("twitter")}
+              disabled={oauthLoading}
+            >
               <XIcon className="w-6 h-6" />
-            </Button>
-            <Button variant="purple" size={"icon"}>
-              <TelegramIcon className="w-6 h-6" />
-            </Button>
-            <Button variant="purple" size={"icon"}>
-              <DiscordIcon className="w-6 h-6" />
             </Button>
           </div>
         </div>
@@ -265,21 +285,32 @@ const Auth = () => {
           </div>
 
           <div className="flex gap-2  justify-center">
-            <Button variant="purple" size={"icon"}>
+            <Button
+              variant="purple"
+              size={"icon"}
+              onClick={() => handleOAuthLogin("google")}
+              disabled={oauthLoading}
+            >
               <GoogleIcon className="w-6 h-6" />
             </Button>
-            <Button variant="purple" size={"icon"}>
+            <Button
+              variant="purple"
+              size={"icon"}
+              onClick={() => handleOAuthLogin("twitter")}
+              disabled={oauthLoading}
+            >
               <XIcon className="w-6 h-6" />
-            </Button>
-            <Button variant="purple" size={"icon"}>
-              <TelegramIcon className="w-6 h-6" />
-            </Button>
-            <Button variant="purple" size={"icon"}>
-              <DiscordIcon className="w-6 h-6" />
             </Button>
           </div>
         </div>
       </div>
+
+      {/* OAuth Error Display */}
+      {oauthError && (
+        <div className="fixed top-4 right-4 bg-red-900/90 text-white px-4 py-2 rounded-lg border border-red-700 z-50">
+          <p className="text-sm">{oauthError}</p>
+        </div>
+      )}
 
       {/* OTP Modal */}
       <VerificationModal

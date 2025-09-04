@@ -48,7 +48,6 @@ export const useClaimReferralReward = () => {
       referralsApi.claimReferralReward({ referralId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: referralKeys.info() });
-      queryClient.removeQueries({ queryKey: authKeys.all });
       toast.success("Referral reward claimed successfully");
     },
     onError: (error) => {

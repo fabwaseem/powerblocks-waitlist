@@ -114,25 +114,19 @@ export function UsernameModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="w-full max-w-lg min-h-[400px] mx-4 p-0 border border-white/10 overflow-hidden rounded-xl"
-        showCloseButton={false}
+        className=""
         style={{
           background: "linear-gradient(to bottom, #11042F, #04010E)",
         }}
+        showCloseButton
       >
         <div className="relative">
-          <button
-            onClick={() => onOpenChange(false)}
-            className="absolute top-4 right-4 z-10 text-gray-400 hover:text-white transition-colors"
-          >
-            <X className="h-5 w-5" />
-          </button>
           <div className="flex flex-col items-center justify-center h-full">
             <DialogTitle className="sr-only">
               {type === "task" ? "Create Username" : "Update Username"}
             </DialogTitle>
 
-            <div className="p-8 w-full">
+            <div className="lg:p-8 w-full">
               <div className="text-center">
                 <h2 className="text-2xl font-bold text-white mb-2">
                   {type === "task" ? "Create Username" : "Update Username"}

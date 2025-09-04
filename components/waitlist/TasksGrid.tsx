@@ -9,7 +9,14 @@ import { UsernameModal } from "@/components/home/username-modal";
 import { useAuth } from "@/hooks/use-auth";
 import { useCompleteTask, useTasks } from "@/hooks/use-tasks";
 import { Task, TaskType } from "@/lib/api/tasks";
-import { CheckIcon, FlameIcon, LockIcon } from "lucide-react";
+import {
+  CheckIcon,
+  FlameIcon,
+  LockIcon,
+  Sparkles,
+  Target,
+  Zap,
+} from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -36,53 +43,89 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
   for (let i = 0; i < gridSize; i++) {
     const task = tasks?.[i];
     let icon = "lock";
-    let bgColor = "bg-gray-700/30";
-    let borderColor = "border-gray-600";
+    let bgColor = "bg-gradient-to-br from-gray-700/30 to-gray-800/40";
+    let borderColor = "border-gray-600/50";
+    let iconColor = "text-gray-500";
     let isClickable = false;
+    let glowEffect = "";
+    let hoverEffect = "";
 
     if (task) {
       if (task.isCompleted) {
-        // Completed tasks - green checkmarks
+        // Completed tasks - green checkmarks with glow
         icon = "check";
-        bgColor = "bg-green-500/20";
-        borderColor = "border-green-500";
+        bgColor = "bg-gradient-to-br from-green-500/20 to-emerald-600/30";
+        borderColor = "border-green-500/60";
+        iconColor = "text-green-400";
+        glowEffect = "shadow-lg shadow-green-500/25";
+        hoverEffect =
+          "hover:scale-110 hover:shadow-xl hover:shadow-green-500/40";
       } else if (task.isNextTask && !task.isLocked) {
-        // Next available task - purple flame
+        // Next available task - purple flame with animation
         icon = "flame";
-        bgColor = "bg-purple-500/20";
-        borderColor = "border-purple-500";
+        bgColor = "bg-gradient-to-br from-[#EE4FFB]/20 to-[#FF6B9D]/30";
+        borderColor = "border-[#EE4FFB]/60";
+        iconColor = "text-[#EE4FFB]";
+        glowEffect = "shadow-lg shadow-[#EE4FFB]/25 animate-pulse";
+        hoverEffect =
+          "hover:scale-110 hover:shadow-xl hover:shadow-[#EE4FFB]/40 hover:bg-gradient-to-br hover:from-[#EE4FFB]/30 hover:to-[#FF6B9D]/40 cursor-pointer";
         isClickable = true;
       } else if (task.isLocked) {
-        // Locked tasks - gray lock
+        // Locked tasks - gray lock with subtle effect
         icon = "lock";
-        bgColor = "bg-gray-700/30";
-        borderColor = "border-gray-600";
+        bgColor = "bg-gradient-to-br from-gray-700/30 to-gray-800/40";
+        borderColor = "border-gray-600/50";
+        iconColor = "text-gray-500";
+        glowEffect = "";
+        hoverEffect =
+          "hover:scale-105 hover:bg-gradient-to-br hover:from-gray-600/40 hover:to-gray-700/50";
       }
     } else {
       // No task at this position - gray lock
       icon = "lock";
-      bgColor = "bg-gray-700/30";
-      borderColor = "border-gray-600";
+      bgColor = "bg-gradient-to-br from-gray-700/30 to-gray-800/40";
+      borderColor = "border-gray-600/50";
+      iconColor = "text-gray-500";
+      glowEffect = "";
+      hoverEffect =
+        "hover:scale-105 hover:bg-gradient-to-br hover:from-gray-600/40 hover:to-gray-700/50";
     }
 
     gridItems.push(
       <div
         key={i}
-        className={`w-11 h-11 rounded-lg ${bgColor} border ${borderColor} flex items-center justify-center transition-all duration-200 ${
-          isClickable
-            ? "hover:scale-105 cursor-pointer hover:bg-purple-500/30"
-            : "hover:scale-105"
+        className={`w-12 h-12 rounded-2xl ${bgColor} border-2 ${borderColor} flex items-center justify-center transition-all duration-300 ${glowEffect} ${hoverEffect} relative overflow-hidden group ${
+          isClickable ? "cursor-pointer" : ""
         }`}
         onClick={() => isClickable && !completingTask && handleTaskClick(task)}
       >
-        {completingTask && isClickable ? (
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-400"></div>
-        ) : icon === "check" ? (
-          <CheckIcon className="w-5 h-5 text-green-400" />
-        ) : icon === "flame" ? (
-          <FlameIcon className="w-5 h-5 text-purple-400" />
-        ) : (
-          <LockIcon className="w-5 h-5 text-gray-500" />
+        {/* Background glow effect for active tasks */}
+        {isClickable && (
+          <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/10 to-[#FF6B9D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+        )}
+
+        {/* Icon with enhanced styling */}
+        <div className="relative z-10">
+          {completingTask && isClickable ? (
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#EE4FFB] border-t-transparent"></div>
+          ) : icon === "check" ? (
+            <div className="relative">
+              <CheckIcon className="w-6 h-6 text-green-400 drop-shadow-lg" />
+              <div className="absolute inset-0 bg-green-400/20 rounded-full blur-sm animate-pulse"></div>
+            </div>
+          ) : icon === "flame" ? (
+            <div className="relative">
+              <FlameIcon className="w-6 h-6 text-[#EE4FFB] drop-shadow-lg" />
+              <div className="absolute inset-0 bg-[#EE4FFB]/20 rounded-full blur-sm animate-pulse"></div>
+            </div>
+          ) : (
+            <LockIcon className="w-6 h-6 text-gray-500" />
+          )}
+        </div>
+
+        {/* Hover effect overlay */}
+        {isClickable && (
+          <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/5 to-[#FF6B9D]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
         )}
       </div>
     );
@@ -209,9 +252,37 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
 
   return (
     <>
-      <div className="flex flex-wrap justify-center gap-3 max-w-xs mx-auto lg:mx-0 ">
-        {gridItems}
+      {/* Enhanced Grid Container */}
+      <div className="relative">
+
+        {/* Enhanced Grid */}
+        <div className="flex flex-wrap justify-center gap-4 max-w-2xl mx-auto lg:mx-0">
+          {gridItems}
+        </div>
+
+        {/* Legend */}
+        <div className="mt-6 flex flex-wrap justify-center gap-6 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-gradient-to-br from-green-500/20 to-emerald-600/30 border-2 border-green-500/60 rounded-lg flex items-center justify-center">
+              <CheckIcon className="w-3 h-3 text-green-400" />
+            </div>
+            <span className="text-gray-300">Completed</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-gradient-to-br from-[#EE4FFB]/20 to-[#FF6B9D]/30 border-2 border-[#EE4FFB]/60 rounded-lg flex items-center justify-center">
+              <FlameIcon className="w-3 h-3 text-[#EE4FFB]" />
+            </div>
+            <span className="text-gray-300">Available</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-gradient-to-br from-gray-700/30 to-gray-800/40 border-2 border-gray-600/50 rounded-lg flex items-center justify-center">
+              <LockIcon className="w-3 h-3 text-gray-500" />
+            </div>
+            <span className="text-gray-300">Locked</span>
+          </div>
+        </div>
       </div>
+
       <PhoneVerificationModal
         open={phoneModalOpen}
         onOpenChange={setPhoneModalOpen}

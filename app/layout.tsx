@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { QueryProvider } from "@/context/query-provider";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/context/auth-provider";
+import MouseFollower from "@/components/common/MouseFollower";
 
 const aeonik = localFont({
   src: [
@@ -50,6 +51,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               {children}
+              <MouseFollower />
               <Toaster
                 position="top-right"
                 toastOptions={{

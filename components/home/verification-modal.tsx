@@ -197,22 +197,15 @@ export function VerificationModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        showCloseButton={false}
         style={{
           background: "linear-gradient(to bottom, #11042F, #04010E)",
         }}
       >
         <div className="relative">
-          <button
-            onClick={() => onOpenChange(false)}
-            className="absolute top-4 right-4 z-10 text-gray-400 hover:text-white transition-colors"
-          >
-            <X className="h-5 w-5" />
-          </button>
           <div className="flex flex-col items-center justify-center h-full">
             <DialogTitle className="sr-only">One-Time Password</DialogTitle>
 
-            <div className="p-4 lg:p-8">
+            <div className="lg:p-8 w-full">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-white mb-6">
                   One-Time Password

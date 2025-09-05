@@ -12,7 +12,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="relative z-50 flex pb-6  w-full shrink-0 items-center justify-between  max-w-[1640px] mx-auto">
+      <header className="relative z-50 flex max-lg:p-2 pb-6!   w-full shrink-0 items-center justify-between  max-w-[1640px] mx-auto">
         {/* Desktop Left Section */}
         <div className="flex items-center gap-6">
           {/* Logo */}

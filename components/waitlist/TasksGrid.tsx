@@ -5,6 +5,7 @@ import { CountryModal } from "@/components/home/country-modal";
 import { EmailVerificationModal } from "@/components/home/email-verification-modal";
 import { GenderModal } from "@/components/home/gender-modal";
 import { PhoneVerificationModal } from "@/components/home/phone-verification-modal";
+import { SocialLinksModal } from "@/components/home/social-links-modal";
 import { TwitterTaskModal } from "@/components/home/twitter-task-modal";
 import { UsernameModal } from "@/components/home/username-modal";
 import { useAuth } from "@/hooks/use-auth";
@@ -36,6 +37,7 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [cityModalOpen, setCityModalOpen] = useState(false);
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
+  const [socialLinksModalOpen, setSocialLinksModalOpen] = useState(false);
   const [twitterModalOpen, setTwitterModalOpen] = useState(false);
 
   const { data: tasks, refetch } = useTasks();
@@ -206,6 +208,11 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
       return;
     }
 
+    if (task.taskType === TaskType.SOCIAL_LINKS) {
+      setSocialLinksModalOpen(true);
+      return;
+    }
+
     if (task.taskType === TaskType.ENABLE_WEB_PUSH) {
       if (Notification.permission === "denied") {
         toast.error(
@@ -355,6 +362,11 @@ const TasksGrid = ({ totalTasks }: { totalTasks: number }) => {
       <AvatarModal
         open={avatarModalOpen}
         onOpenChange={setAvatarModalOpen}
+        onSuccess={handleTaskSuccess}
+      />
+      <SocialLinksModal
+        open={socialLinksModalOpen}
+        onOpenChange={setSocialLinksModalOpen}
         onSuccess={handleTaskSuccess}
       />
       <TwitterTaskModal

@@ -1,6 +1,6 @@
 "use client";
 
-import { X } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
@@ -8,8 +8,15 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { tasksApi } from "@/lib/api/tasks";
+import { countries } from "@/data/countires";
 
 interface PhoneVerificationModalProps {
   open: boolean;
@@ -23,6 +30,7 @@ export function PhoneVerificationModal({
   onSuccess,
 }: PhoneVerificationModalProps) {
   const [step, setStep] = useState<"phone" | "otp">("phone");
+  const [selectedCountry, setSelectedCountry] = useState(countries[0]); // Default to US
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
@@ -56,6 +64,7 @@ export function PhoneVerificationModal({
   useEffect(() => {
     if (open) {
       setStep("phone");
+      setSelectedCountry(countries[0]); // Reset to default country
       setPhoneNumber("");
       setOtp(["", "", "", "", "", ""]);
       setTimeLeft(300);
@@ -102,34 +111,31 @@ export function PhoneVerificationModal({
   });
 
   const formatPhoneNumber = (value: string) => {
-    // Remove all non-digit characters except +
-    const cleaned = value.replace(/[^\d+]/g, "");
-
-    // Ensure it starts with + if it has digits
-    if (cleaned.length > 0 && !cleaned.startsWith("+")) {
-      return "+" + cleaned;
-    }
-
+    // Remove all non-digit characters
+    const cleaned = value.replace(/\D/g, "");
     return cleaned;
   };
 
   const validatePhoneNumber = (phone: string) => {
-    // Basic validation: should start with + and have 10-15 digits
-    const phoneRegex = /^\+\d{10,15}$/;
+    // Basic validation: should have 7-15 digits (without country code)
+    const phoneRegex = /^\d{7,15}$/;
     return phoneRegex.test(phone);
+  };
+
+  const getFullPhoneNumber = () => {
+    return selectedCountry.code + phoneNumber;
   };
 
   const handlePhoneSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validatePhoneNumber(phoneNumber)) {
-      toast.error(
-        "Please enter a valid phone number with country code (e.g., +1234567890)"
-      );
+      toast.error("Please enter a valid phone number (7-15 digits)");
       return;
     }
 
-    sendOtpMutation.mutate(phoneNumber);
+    const fullPhoneNumber = getFullPhoneNumber();
+    sendOtpMutation.mutate(fullPhoneNumber);
   };
 
   const handleOtpInputChange = (index: number, value: string) => {
@@ -215,8 +221,9 @@ export function PhoneVerificationModal({
   };
 
   const handleOtpSubmit = (otpString: string) => {
+    const fullPhoneNumber = getFullPhoneNumber();
     verifyOtpMutation.mutate({
-      phoneNumber,
+      phoneNumber: fullPhoneNumber,
       otp: otpString,
     });
   };
@@ -224,7 +231,8 @@ export function PhoneVerificationModal({
   const handleResendOtp = () => {
     setTimeLeft(300);
     setOtp(["", "", "", "", "", ""]);
-    sendOtpMutation.mutate(phoneNumber);
+    const fullPhoneNumber = getFullPhoneNumber();
+    sendOtpMutation.mutate(fullPhoneNumber);
   };
 
   const formatTime = (seconds: number) => {
@@ -273,21 +281,66 @@ export function PhoneVerificationModal({
                       >
                         Phone Number
                       </label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+1234567890"
-                        value={phoneNumber}
-                        onChange={(e) =>
-                          setPhoneNumber(formatPhoneNumber(e.target.value))
-                        }
-                        className="w-full bg-white/5 border border-white/20 rounded-2xl px-4 py-3 text-white placeholder-gray-400 focus:border-[#EE4FFB] focus:outline-none focus:ring-2 focus:ring-[#EE4FFB]/20 transition-all duration-300"
-                        disabled={isLoading}
-                        required
-                      />
+                      <div className="flex gap-2">
+                        {/* Country Selector */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="flex items-center gap-2 bg-white/5 border border-white/20 rounded-2xl px-3 py-3 text-white hover:bg-white/10 focus:border-[#EE4FFB] focus:outline-none focus:ring-2 focus:ring-[#EE4FFB]/20 transition-all duration-300 min-w-[120px]"
+                              disabled={isLoading}
+                            >
+                              <img
+                                src={selectedCountry.flag}
+                                alt={selectedCountry.name}
+                                className="w-5 h-4 object-cover rounded-sm"
+                              />
+                              <span className="text-sm font-medium">
+                                {selectedCountry.code}
+                              </span>
+                              <ChevronDown className="w-4 h-4 ml-auto" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="bg-[#1a1a2e]/95 backdrop-blur-xl border border-[#2a2a4e]/50 rounded-2xl shadow-2xl shadow-[#EE4FFB]/10">
+                            {countries.map((country) => (
+                              <DropdownMenuItem
+                                key={country.countryCode}
+                                onClick={() => setSelectedCountry(country)}
+                                className="flex items-center gap-3 px-3 py-2 text-white hover:bg-white/10 focus:bg-white/10 cursor-pointer"
+                              >
+                                <img
+                                  src={country.flag}
+                                  alt={country.name}
+                                  className="w-5 h-4 object-cover rounded-sm"
+                                />
+                                <span className="text-sm font-medium">
+                                  {country.code}
+                                </span>
+                                <span className="text-sm text-gray-400 ml-auto">
+                                  {country.name}
+                                </span>
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        {/* Phone Number Input */}
+                        <Input
+                          id="phone"
+                          type="tel"
+                          placeholder="1234567890"
+                          value={phoneNumber}
+                          onChange={(e) =>
+                            setPhoneNumber(formatPhoneNumber(e.target.value))
+                          }
+                          className="flex-1 bg-white/5 border border-white/20 rounded-2xl px-4 py-3 text-white placeholder-gray-400 focus:border-[#EE4FFB] focus:outline-none focus:ring-2 focus:ring-[#EE4FFB]/20 transition-all duration-300"
+                          disabled={isLoading}
+                          required
+                        />
+                      </div>
                       <p className="text-xs text-gray-400 mt-2">
-                        Enter your phone number with country code (e.g., +1 for
-                        US)
+                        Enter your phone number (7-15 digits)
                       </p>
                     </div>
 
@@ -356,7 +409,7 @@ export function PhoneVerificationModal({
                       Verification code sent to
                     </p>
                     <p className="text-white text-sm font-medium">
-                      {phoneNumber}
+                      {getFullPhoneNumber()}
                     </p>
                   </div>
 

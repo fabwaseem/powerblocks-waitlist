@@ -7,7 +7,7 @@ import {
   Gift,
   Share2,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import CopyButton from "../common/CopyButton";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
@@ -16,10 +16,15 @@ import { useClaimReferralReward, useReferralInfo } from "@/hooks/use-referrals";
 import { useAuth } from "@/hooks/use-auth";
 
 const ReferralsCard = () => {
-  const { user,refetch: refetchUser } = useAuth();
+  const { user, refetch: refetchUser } = useAuth();
   const { data: referralInfo, isLoading } = useReferralInfo();
   const { mutate: claimReferralReward, isPending: claimReferralRewardLoading } =
     useClaimReferralReward();
+
+  // Track loading state for individual referral claims
+  const [claimingReferralId, setClaimingReferralId] = useState<string | null>(
+    null
+  );
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -42,18 +47,24 @@ const ReferralsCard = () => {
           </div>
         );
       case "CLAIMABLE":
+        const isClaimingThisReferral = claimingReferralId === referralId;
         return (
           <Button
             variant={"purple"}
             size={"sm"}
             className="w-max bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] hover:from-[#FF6B9D] hover:to-[#EE4FFB] transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#EE4FFB]/25 text-white"
             onClick={async () => {
-              claimReferralReward(referralId);
-              refetchUser();
+              setClaimingReferralId(referralId);
+              try {
+                await claimReferralReward(referralId);
+                refetchUser();
+              } finally {
+                setClaimingReferralId(null);
+              }
             }}
-            disabled={claimReferralRewardLoading}
+            disabled={isClaimingThisReferral}
           >
-            {claimReferralRewardLoading ? (
+            {isClaimingThisReferral ? (
               <div className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                 Claiming...
@@ -96,7 +107,7 @@ const ReferralsCard = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-[#11042F]/80 to-[#020106]/90 backdrop-blur-xl rounded-3xl border border-[#2a2a4e]/50 p-8 shadow-2xl shadow-[#EE4FFB]/10 relative overflow-hidden group">
+    <div className="bg-gradient-to-br from-[#11042F]/80 to-[#020106]/90 backdrop-blur-xl rounded-3xl border border-[#2a2a4e]/50 p-4 sm:p-8 shadow-2xl shadow-[#EE4FFB]/10 relative overflow-hidden group">
       {/* Card Glow Effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/5 to-[#28A9A3]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 

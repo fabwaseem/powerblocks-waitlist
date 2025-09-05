@@ -46,12 +46,12 @@ export function UserDropdown({ user, onLogout }: UserDropdownProps) {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="text-white flex hover:bg-white/10 items-center gap-3 hidden sm:flex bg-gradient-to-r from-white/5 to-white/10 border border-white/20 rounded-2xl px-4 py-5 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-[#EE4FFB]/25 group"
+          className="text-white flex hover:bg-white/10 items-center gap-3  flex bg-gradient-to-r from-white/5 to-white/10 border border-white/20 rounded-2xl px-4 py-5 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-[#EE4FFB]/25 group"
         >
           <div className="size-6 bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] rounded-full flex items-center justify-center text-xs  text-white shadow-lg shadow-[#EE4FFB]/25 group-hover:shadow-[#EE4FFB]/40 transition-all duration-300">
             {getInitials(user.username)}
           </div>
-          <div className="flex flex-col items-start">
+          <div className=" flex-col items-start hidden sm:flex">
             <span className="text-white font-semibold text-sm">
               {user.username}
             </span>

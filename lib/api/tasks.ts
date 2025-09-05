@@ -18,6 +18,7 @@ export enum TaskType {
   FOLLOW_TG_ACCOUNT = "FOLLOW_TG_ACCOUNT",
   FOLLOW_DISCORD_ACCOUNT = "FOLLOW_DISCORD_ACCOUNT",
   JOIN_REDDIT = "JOIN_REDDIT",
+  SOCIAL_LINKS = "SOCIAL_LINKS",
 
   // Engagement Tasks
   ENABLE_WEB_PUSH = "ENABLE_WEB_PUSH",
@@ -144,6 +145,9 @@ export const tasksApi = {
     dob?: string;
     country?: string;
     city?: string;
+    telegram?: string;
+    instagram?: string;
+    tiktok?: string;
   }): Promise<{ success: boolean; message: string }> => {
     const response = await api.put<{ success: boolean; message: string }>(
       `/tasks/user/update`,

@@ -3,14 +3,14 @@
 import { useMutation } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import AppleDatePicker from "@/components/ui/apple-date-picker";
 
 import { tasksApi } from "@/lib/api/tasks";
-import { Input } from "../ui/input";
+import "@/components/ui/wheel.css";
 
 interface AgeDobModalProps {
   open: boolean;
@@ -80,9 +80,18 @@ export function AgeDobModal({
       return;
     }
 
-    // Format date as YYYY-MM-DD
-    const formattedDate = dateOfBirth.toISOString().split("T")[0];
+    // Format date as YYYY-MM-DD (avoiding timezone issues)
+    const year = dateOfBirth.getFullYear();
+    const month = String(dateOfBirth.getMonth() + 1).padStart(2, "0");
+    const day = String(dateOfBirth.getDate()).padStart(2, "0");
+    const formattedDate = `${year}-${month}-${day}`;
+    console.log(formattedDate);
     updateDobMutation.mutate(formattedDate);
+  };
+
+  const handleChange = (date: Date) => {
+    console.log(date);
+    setDateOfBirth(date);
   };
 
   const isLoading = updateDobMutation.isPending;
@@ -114,26 +123,20 @@ export function AgeDobModal({
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="text-left">
-                    <label
-                      htmlFor="dob"
-                      className="block text-sm font-medium text-gray-300 mb-2"
-                    >
+                    <label className="block text-sm font-medium text-gray-300 mb-4">
                       Date of Birth
                     </label>
-                    <div className="w-full">
-                      <Input
-                        type="date"
-                        value={dateOfBirth?.toISOString().split("T")[0]}
-                        onChange={(e) =>
-                          setDateOfBirth(new Date(e.target.value))
-                        }
-                        disabled={isLoading}
-                        className="w-full bg-white/5 border border-white/20 rounded-2xl px-4 py-3 text-white placeholder-gray-400 focus:border-[#EE4FFB] focus:outline-none focus:ring-2 focus:ring-[#EE4FFB]/20 transition-all duration-300"
+                    <div className="w-full bg-white/5 border border-white/20 rounded-2xl p-4">
+                      <AppleDatePicker
+                        value={dateOfBirth || new Date()}
+                        onChange={(v) => handleChange(v)}
+                        minYear={1900}
+                        maxYear={new Date().getFullYear()}
                       />
                     </div>
 
                     {dateOfBirth && (
-                      <p className="text-xs text-[#EE4FFB] mt-2 font-medium">
+                      <p className="text-xs text-[#EE4FFB] mt-3 font-medium text-center">
                         Age: {calculateAge(dateOfBirth)} years
                       </p>
                     )}

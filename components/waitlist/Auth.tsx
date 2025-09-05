@@ -132,7 +132,7 @@ const Auth = () => {
           height={42}
           className="size-10"
         />
-        <h1 className="text-white text-2xl font-aeon ik-bold">Powerblocks</h1>
+        <h1 className="text-white text-2xl font-aeon font-bold">Powerblocks</h1>
       </Link>
 
       {/* DESKTOP */}
@@ -214,7 +214,7 @@ const Auth = () => {
         <img
           src="/images/waitlist/yoni.png"
           alt="yuni"
-          className="absolute bottom-0 left-[40%] w-4xl object-cover pointer-events-none"
+          className="absolute top-0 left-[40%] w-4xl h-screen object-cover pointer-events-none"
         />
       </div>
 

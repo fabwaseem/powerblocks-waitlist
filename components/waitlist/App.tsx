@@ -19,6 +19,7 @@ import ReferralsCard from "./ReferralsCard";
 import TasksSection from "./TasksSection";
 import { useAuth } from "@/hooks/use-auth";
 import Link from "next/link";
+import { formatNumber } from "@/lib/utils";
 
 const App = () => {
   const { user } = useAuth();
@@ -30,7 +31,7 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f0f23] to-[#1a0a2e] text-white p-4 lg:p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f0f23] to-[#1a0a2e] text-white p-4 lg:p-6 relative overflow-hidden max-lg:p-2">
       <Navbar />
 
       {/* Enhanced Background Effects */}
@@ -57,13 +58,11 @@ const App = () => {
         ))}
       </div>
 
-      {/* content */}
-      <div className="max-w-[1640px] mx-auto relative z-10">
-        {/* Enhanced Welcome Header */}
+      <div className="max-w-[1640px] mx-auto relative z-10 max-lg:scale-95 origin-top">
         <div className="flex justify-between lg:items-center mb-12 flex-col lg:flex-row gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl lg:text-5xl font-bold bg-gradient-to-r from-white via-[#EE4FFB] to-[#FF6B9D] bg-clip-text text-transparent">
+              <h1 className="text-3xl lg:text-5xl font-bold bg-gradient-to-r from-white via-[#EE4FFB] to-[#FF6B9D] bg-clip-text text-transparent leading-tight">
                 Hi Dawg, welcome back!
               </h1>
             </div>
@@ -72,7 +71,6 @@ const App = () => {
             </p>
           </div>
 
-          {/* Social Media Icons */}
           <div className="flex gap-3">
             <Button variant="purple" size={"icon"} asChild>
               <Link href={"https://x.com/Powerblocks_io"} target="_blank">
@@ -110,10 +108,8 @@ const App = () => {
         </div>
 
         <div className="space-y-8">
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Enhanced Profile Card */}
-            <div className="bg-gradient-to-br from-[#11042F]/80 to-[#020106]/90 backdrop-blur-xl rounded-3xl p-8 border border-[#2a2a4e]/50 shadow-2xl shadow-[#EE4FFB]/10 relative overflow-hidden group">
-              {/* Card Glow Effect */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div className="bg-gradient-to-br from-[#11042F]/80 to-[#020106]/90 backdrop-blur-xl rounded-3xl p-4 sm:p-8 border border-[#2a2a4e]/50 shadow-2xl shadow-[#EE4FFB]/10 relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/5 to-[#28A9A3]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
               <div className="flex items-start gap-6 mb-8 relative z-10">
@@ -149,11 +145,11 @@ const App = () => {
                   <div className="flex items-center gap-2 mb-2">
                     <Trophy className="w-6 h-6 text-[#FFD700]" />
                     <span className="text-4xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-                      {user?.xpPoints?.total}
+                      {formatNumber(user?.xpPoints?.total)}
                     </span>
                   </div>
                   <div className="text-[#A5A9C1] text-sm font-medium">
-                    Available PR points
+                    Available XP points
                   </div>
                 </div>
               </div>
@@ -166,7 +162,7 @@ const App = () => {
                   </div>
                   <div className="bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-2xl py-4 backdrop-blur-sm group-hover:border-[#EE4FFB]/50 group-hover:bg-gradient-to-br group-hover:from-[#EE4FFB]/10 group-hover:to-[#EE4FFB]/5 transition-all duration-300">
                     <div className="text-2xl font-bold text-white group-hover:text-[#EE4FFB] transition-colors duration-300">
-                      {user?.xpPoints?.today}
+                      {formatNumber(user?.xpPoints?.today)}
                     </div>
                     <div className="text-[#A5A9C1] text-xs font-medium">XP</div>
                   </div>
@@ -177,7 +173,7 @@ const App = () => {
                   </div>
                   <div className="bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-2xl py-4 backdrop-blur-sm group-hover:border-[#28A9A3]/50 group-hover:bg-gradient-to-br group-hover:from-[#28A9A3]/10 group-hover:to-[#28A9A3]/5 transition-all duration-300">
                     <div className="text-2xl font-bold text-white group-hover:text-[#28A9A3] transition-colors duration-300">
-                      {user?.xpPoints?.thisWeek}
+                      {formatNumber(user?.xpPoints?.thisWeek)}
                     </div>
                     <div className="text-[#A5A9C1] text-xs font-medium">XP</div>
                   </div>
@@ -188,7 +184,7 @@ const App = () => {
                   </div>
                   <div className="bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-2xl py-4 backdrop-blur-sm group-hover:border-[#FF6B9D]/50 group-hover:bg-gradient-to-br group-hover:from-[#FF6B9D]/10 group-hover:to-[#FF6B9D]/5 transition-all duration-300">
                     <div className="text-2xl font-bold text-white group-hover:text-[#FF6B9D] transition-colors duration-300">
-                      {user?.xpPoints?.thisMonth}
+                      {formatNumber(user?.xpPoints?.thisMonth)}
                     </div>
                     <div className="text-[#A5A9C1] text-xs font-medium">XP</div>
                   </div>
@@ -204,7 +200,7 @@ const App = () => {
                   </span>
                 </div>
                 <span className="text-[#EE4FFB] font-bold text-lg">
-                  {user?.xpPoints?.total}
+                  {formatNumber(user?.xpPoints?.total)}
                 </span>
               </div>
             </div>

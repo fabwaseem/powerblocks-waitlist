@@ -29,9 +29,9 @@ const aeonik = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "PowerBlocks - From the Streets to the Jet",
+  title: "Powerblocks - From the Streets to the Jet",
   description:
-    "Play games, win prizes, and climb the leaderboard with PowerBlocks",
+    "Play games, win prizes, and climb the leaderboard with Powerblocks",
 };
 
 export default function RootLayout({

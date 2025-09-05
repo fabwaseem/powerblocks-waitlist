@@ -86,7 +86,7 @@ const TasksSection = () => {
 
   if (tasksLoading) {
     return (
-      <div className="bg-gradient-to-br from-[#11042F]/80 to-[#020106]/90 backdrop-blur-xl lg:col-span-2 rounded-3xl border border-[#2a2a4e]/50 p-8 shadow-2xl shadow-[#EE4FFB]/10 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#11042F]/80 to-[#020106]/90 backdrop-blur-xl xl:col-span-2 rounded-3xl border border-[#2a2a4e]/50 p-4 sm:p-8 shadow-2xl shadow-[#EE4FFB]/10 relative overflow-hidden">
         <div className="flex items-center gap-3 mb-8">
           <div className="p-2 bg-gradient-to-r from-[#EE4FFB] to-[#FF6B9D] rounded-xl">
             <Target className="w-6 h-6 text-white" />
@@ -144,7 +144,7 @@ const TasksSection = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-[#11042F]/80 to-[#020106]/90 backdrop-blur-xl lg:col-span-2 rounded-3xl border border-[#2a2a4e]/50 p-8 shadow-2xl shadow-[#EE4FFB]/10 relative overflow-hidden group">
+    <div className="bg-gradient-to-br from-[#11042F]/80 to-[#020106]/90 backdrop-blur-xl lg:col-span-2 rounded-3xl border border-[#2a2a4e]/50 p-4 sm:p-8 shadow-2xl shadow-[#EE4FFB]/10 relative overflow-hidden group">
       {/* Card Glow Effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#EE4FFB]/5 to-[#28A9A3]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 

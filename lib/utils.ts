@@ -26,3 +26,7 @@ export const getXProfileLinkFromUsername = (username: string) => {
 export const getInstagramProfileLinkFromUsername = (username: string) => {
   return `https://instagram.com/${username}`;
 };
+
+export const formatNumber = (number?: number) => {
+  return number?.toLocaleString();
+};
